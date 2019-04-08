@@ -8,4 +8,13 @@
 
     <color name="textPrimaryColor">#252525</color>
     <color name="textSecondaryColor">#3C3C3C</color>
+
+    <color name="placeholder">#A9A9A9</color>
+
+
+    <!-- Dark Text Color for Light Background -->
+    <color name="textDarkPrimary">#DE000000</color> <!--DE for %87 opacity-->
+    <color name="textDarkSecondary">#8A000000</color> <!--8A for %54 opacity-->
+    <color name="textDarkDisabled">#61000000</color> <!--61 for %38 opacity-->
+
 </resources>

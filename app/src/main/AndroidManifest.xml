@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.dutchtechnologies.news_challenge">
 
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
             android:name=".App"
             android:allowBackup="true"
@@ -11,8 +14,7 @@
             android:supportsRtl="true"
             android:theme="@style/Theme.NewsApp">
         <activity
-                android:name=".HomeActivity"
-                android:label="@string/title_activity_home">
+                android:name=".HomeActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

@@ -8,7 +8,6 @@ import kotlinx.android.synthetic.main.fragment_source.view.*
 import android.support.v7.widget.RecyclerView
 
 
-
 class SourcesFragment : BaseFragment(), View.OnClickListener {
     //    private lateinit var homeViewModel: HomeViewModel
     private val sourcesAdapter = SourcesAdapter()
@@ -31,7 +30,12 @@ class SourcesFragment : BaseFragment(), View.OnClickListener {
         val linearLayoutManager = LinearLayoutManager(activity)
         view.fragment_sources_recycler_view.layoutManager = linearLayoutManager
         view.fragment_sources_recycler_view.setHasFixedSize(true)
-        view.fragment_sources_recycler_view.addItemDecoration(DividerItemDecoration(view.context, R.drawable.list_divider))
+        view.fragment_sources_recycler_view.addItemDecoration(
+            DividerItemDecoration(
+                view.context,
+                R.drawable.list_divider
+            )
+        )
 
 
         view.fragment_sources_recycler_view.adapter = sourcesAdapter
@@ -55,7 +59,15 @@ class SourcesFragment : BaseFragment(), View.OnClickListener {
             val itinerary = Source(
                 listOf("BBC", "Bloomberg", "CNN").shuffled().take(1)[0],
                 "News for up-to-the-minute news, breaking news, video, audio and feature stories.",
-                "http://www.bbc.co.uk/news"
+                listOf(
+                    "http://www.bbc.co.uk/news",
+                    "http://www.abc.net.au/news",
+                    "http://www.aljazeera.com",
+                    "http://www.spiegel.de",
+                    "http://us.cnn.com",
+                    "http://espn.go.com",
+                    "http://news.nationalgeographic.com"
+                ).shuffled().take(1)[0]
             )
             itineraries.add(itinerary)
         }
@@ -64,7 +76,7 @@ class SourcesFragment : BaseFragment(), View.OnClickListener {
     }
 
     override fun onClick(view: View?) {
-        when(view?.id){
+        when (view?.id) {
             R.id.view_holder_sources_parent -> {
                 val viewHolder = view?.tag as RecyclerView.ViewHolder
                 val position = viewHolder.adapterPosition
@@ -73,7 +85,8 @@ class SourcesFragment : BaseFragment(), View.OnClickListener {
                 // viewHolder.itemView;
                 val currentSource = sourcesAdapter.items[position]
                 //Calls NewsActivity or Fragment
-
+                //sourceAdapter[position].slug
+                (activity as HomeActivity).fragmentAddToBackStack(R.id.home_container, NewsFragment.newInstance())
             }
 
         }
