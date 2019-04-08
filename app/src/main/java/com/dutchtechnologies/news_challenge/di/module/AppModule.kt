@@ -11,11 +11,11 @@ import dagger.Module
 
 @Module(
     includes = [
+        ViewModelModule::class,
         PresentationModule::class,
         NetworkModule::class,
         UseCaseModule::class,
-        RepositoryModule::class,
-        FragmentBuilder::class]
+        RepositoryModule::class]
 )
 abstract class AppModule {
     @Binds

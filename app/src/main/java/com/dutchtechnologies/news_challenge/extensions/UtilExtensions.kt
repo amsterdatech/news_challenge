@@ -1,9 +1,13 @@
+import android.arch.lifecycle.*
+import android.arch.lifecycle.Observer
 import android.content.Context
 import android.content.res.Configuration
 import android.graphics.drawable.ColorDrawable
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
+import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
+import android.view.View
 import android.widget.ImageView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.Priority
@@ -16,6 +20,7 @@ import com.dutchtechnologies.news_challenge.model.SearchRequestForm
 import java.net.URI
 import java.text.SimpleDateFormat
 import java.util.*
+
 
 //fun Context.isTablet(): Boolean = resources.getBoolean(R.bool.isTablet)
 //
@@ -32,7 +37,7 @@ import java.util.*
 //fun Context.isXxxhdpi(): Boolean = resources.getBoolean(R.bool.isXxxhdpi)
 
 
-fun ImageView.load(url: String?, lowQuality: Boolean = true, placeholder:Int = R.color.placeholder) {
+fun ImageView.load(url: String?, lowQuality: Boolean = true, placeholder: Int = R.color.placeholder) {
     val options = RequestOptions()
         .priority(Priority.NORMAL)
         .diskCacheStrategy(DiskCacheStrategy.DATA)
@@ -80,9 +85,8 @@ fun String.parseIsoDateFormat(): Date {
     return sdf.parse(this)
 }
 
-private var recyclerViewScrollListener: RecyclerViewScrollListener? = null
-
-private class RecyclerViewScrollListener(val scrollListener: NewsAdapter.ScrollListener) : RecyclerView.OnScrollListener() {
+private class RecyclerViewScrollListener(val scrollListener: NewsAdapter.ScrollListener) :
+    RecyclerView.OnScrollListener() {
     override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
         scrollListener.onScrolled(recyclerView, dx, dy)
     }
@@ -91,4 +95,58 @@ private class RecyclerViewScrollListener(val scrollListener: NewsAdapter.ScrollL
 fun RecyclerView.addOnScrollListener(scrollListener: NewsAdapter.ScrollListener) {
     var recyclerViewScrollListener = RecyclerViewScrollListener(scrollListener)
     addOnScrollListener(recyclerViewScrollListener as RecyclerViewScrollListener)
+}
+
+inline fun <reified T : ViewModel> Fragment.viewModelProviders(viewModelFactory: ViewModelProvider.Factory): T {
+    return ViewModelProviders.of(this.activity!!, viewModelFactory)[T::class.java]
+}
+
+inline fun <reified T : ViewModel> Fragment.withViewModel(
+    viewModelFactory: ViewModelProvider.Factory,
+    body: T.() -> Unit
+): T {
+    val viewModel = viewModelProviders<T>(viewModelFactory)
+    viewModel.body()
+    return viewModel
+}
+
+inline fun <reified T : ViewModel> AppCompatActivity.viewModelProviders(viewModelFactory: ViewModelProvider.Factory): T {
+    return ViewModelProviders.of(this, viewModelFactory)[T::class.java]
+}
+
+inline fun <reified T : ViewModel> AppCompatActivity.withViewModel(
+    viewModelFactory: ViewModelProvider.Factory,
+    body: T.() -> Unit
+): T {
+    val viewModel = viewModelProviders<T>(viewModelFactory)
+    viewModel.body()
+    return viewModel
+}
+
+fun <T : Any, L : LiveData<T>> LifecycleOwner.observe(liveData: L, body: (T?) -> Unit) {
+    liveData.observe(this, Observer(body))
+}
+
+fun Fragment.visibleViews(vararg views: View) {
+    for (view in views) {
+        view.visibility = View.VISIBLE
+    }
+}
+
+fun Fragment.goneViews(vararg views: View) {
+    for (view in views) {
+        view.visibility = View.GONE
+    }
+}
+
+fun View.visible() {
+    visibility = View.VISIBLE
+}
+
+fun View.gone() {
+    visibility = View.GONE
+}
+
+fun View.invisible() {
+    visibility = View.INVISIBLE
 }

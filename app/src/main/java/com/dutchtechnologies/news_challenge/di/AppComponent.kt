@@ -3,6 +3,7 @@ package com.dutchtechnologies.news_challenge.di
 import android.app.Application
 import com.dutchtechnologies.news_challenge.di.module.ActivityBuilder
 import com.dutchtechnologies.news_challenge.di.module.AppModule
+import com.dutchtechnologies.news_challenge.di.module.FragmentBuilder
 import dagger.BindsInstance
 import dagger.Component
 import dagger.android.AndroidInjector
@@ -15,7 +16,8 @@ import javax.inject.Singleton
     modules = [
         AndroidSupportInjectionModule::class,
         AppModule::class,
-        ActivityBuilder::class]
+        ActivityBuilder::class,
+        FragmentBuilder::class]
 )
 interface AppComponent : AndroidInjector<DaggerApplication> {
 

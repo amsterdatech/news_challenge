@@ -34,8 +34,6 @@ class SourcesPresenter @Inject constructor(
         searchRequest?.pageIndex?.let {
             if (it == 1) {
                 view.showProgress()
-            } else {
-//                view.showResultLoading()
             }
         }
 

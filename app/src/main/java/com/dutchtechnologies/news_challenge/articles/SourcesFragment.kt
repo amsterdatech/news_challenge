@@ -1,31 +1,71 @@
 package com.dutchtechnologies.news_challenge.articles
 
+import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProviders
 import android.graphics.Color
 import android.os.Build
+import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.view.LayoutInflater
 import android.view.View
-import com.dutchtechnologies.news_challenge.BuildConfig
+import android.view.ViewGroup
 import com.dutchtechnologies.news_challenge.R
 import com.dutchtechnologies.news_challenge.base.BaseFragment
+import com.dutchtechnologies.news_challenge.base.ViewData
 import com.dutchtechnologies.news_challenge.extensions.Browser
 import com.dutchtechnologies.news_challenge.fragmentAddToBackStack
-import com.dutchtechnologies.news_challenge.model.SearchRequestForm
 import com.dutchtechnologies.news_challenge.model.Source
-import com.dutchtechnologies.news_challenge.presentation.ArticlesContract
-import com.dutchtechnologies.news_challenge.presentation.SourcesPresenter
+import goneViews
 import kotlinx.android.synthetic.main.fragment_source.*
 import kotlinx.android.synthetic.main.fragment_source.view.*
+import visible
+import withViewModel
 import javax.inject.Inject
 
 
-class SourcesFragment : BaseFragment(), View.OnClickListener, ArticlesContract.SourceView {
-
-    //    private lateinit var homeViewModel: HomeViewModel
-    private val sourcesAdapter = SourcesAdapter()
+class SourcesFragment : BaseFragment(), View.OnClickListener {
 
     @Inject
-    lateinit var sourcesPresenter: SourcesPresenter
+    lateinit var homeViewModel: HomeViewModel
+
+    private val sourcesAdapter = SourcesAdapter()
+
+    private val changeObserver = Observer<ViewData<List<Source>>> { value ->
+        value?.let {
+            when (it?.status) {
+                ViewData.Status.LOADING -> {
+                    goneViews(
+                        fragment_sources_recycler_view
+                    )
+                    fragment_sources_custom_view_loading.visible()
+                }
+
+                ViewData.Status.SUCCESS -> {
+                    goneViews(
+                        fragment_sources_custom_view_loading
+                    )
+
+                    it.data?.run {
+                        sourcesAdapter.items += this
+                        sourcesAdapter.notifyDataSetChanged()
+                    }
+
+                    if (sourcesAdapter.items.isNotEmpty()) {
+                        fragment_sources_recycler_view.visible()
+                        return@let
+                    }
+                }
+
+                ViewData.Status.ERROR -> {
+                    goneViews(
+                        fragment_sources_custom_view_loading,
+                        fragment_sources_recycler_view
+                    )
+                }
+            }
+        }
+    }
 
 
     companion object {
@@ -35,37 +75,25 @@ class SourcesFragment : BaseFragment(), View.OnClickListener, ArticlesContract.S
 
     }
 
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val view = super.onCreateView(inflater, container, savedInstanceState)
+
+        homeViewModel = ViewModelProviders.of(this, viewModelFactory)[HomeViewModel::class.java]
+        homeViewModel.liveDataSources().observe(this,changeObserver)
+        homeViewModel.shouldFetch()
+
+        return view
+    }
+
     override fun layoutResource(): Int = R.layout.fragment_source
 
     override fun setupView(view: View) {
-        (activity as HomeActivity).setSupportActionBar(view.fragment_sources_toolbar)
-        (activity as HomeActivity).supportActionBar?.setDisplayShowTitleEnabled(false)
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            activity?.window?.statusBarColor = context?.resources?.getColor(R.color.colorPrimary, null)
-                ?: Color.parseColor("#006200EE")
-        }
-
-        view.fragment_sources_toolbar.title = context?.resources?.getString(R.string.app_name)
-
-        val linearLayoutManager = LinearLayoutManager(activity)
-        view.fragment_sources_recycler_view.layoutManager = linearLayoutManager
-        view.fragment_sources_recycler_view.setHasFixedSize(true)
-        view.fragment_sources_recycler_view.addItemDecoration(
-            DividerItemDecoration(
-                view.context,
-                R.drawable.list_divider
-            )
-        )
-
-        view.fragment_sources_recycler_view.adapter = sourcesAdapter
-        sourcesAdapter.click = this
-
+        setupToolbar(view)
+        setupRecyclerView(view)
         Browser.warm((activity as HomeActivity).baseContext)
     }
 
     override fun screenName(): String? = ""
-
 
     override fun onClick(view: View?) {
 
@@ -94,57 +122,32 @@ class SourcesFragment : BaseFragment(), View.OnClickListener, ArticlesContract.S
         }
     }
 
-
-    override fun onStart() {
-        super.onStart()
-        sourcesPresenter.attachView(this)
-        sourcesPresenter.start()
-
-        if (sourcesAdapter.items == null || sourcesAdapter.items.isEmpty()) {
-            sourcesPresenter.getSources(
-                SearchRequestForm(
-                    apiKey = BuildConfig.API_KEY
-                )
+    private fun setupRecyclerView(view: View) {
+        val linearLayoutManager = LinearLayoutManager(activity)
+        view.fragment_sources_recycler_view.layoutManager = linearLayoutManager
+        view.fragment_sources_recycler_view.setHasFixedSize(true)
+        view.fragment_sources_recycler_view.addItemDecoration(
+            DividerItemDecoration(
+                view.context,
+                R.drawable.list_divider
             )
+        )
+
+        view.fragment_sources_recycler_view.adapter = sourcesAdapter
+        sourcesAdapter.click = this
+    }
+
+    private fun setupToolbar(view: View) {
+        (activity as HomeActivity).setSupportActionBar(view.fragment_sources_toolbar)
+        (activity as HomeActivity).supportActionBar?.setDisplayShowTitleEnabled(false)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            activity?.window?.statusBarColor = context?.resources?.getColor(R.color.colorPrimary, null)
+                ?: Color.parseColor("#006200EE")
         }
 
+        view.fragment_sources_toolbar.title = context?.resources?.getString(R.string.app_name)
     }
 
-    override fun onStop() {
-        super.onStop()
-        sourcesPresenter.stop()
-    }
-
-    override fun showResults(results: List<Source>) {
-        sourcesAdapter.items += results
-        fragment_sources_recycler_view.visibility = View.VISIBLE
-    }
-
-    override fun setPresenter(presenter: ArticlesContract.SourcesPresenter) {
-    }
-
-    override fun showProgress() {
-        fragment_sources_custom_view_loading.visibility = View.VISIBLE
-    }
-
-    override fun hideProgress() {
-        fragment_sources_custom_view_loading.visibility = View.GONE
-    }
-
-    override fun hideResults() {
-        fragment_sources_recycler_view.visibility = View.GONE
-    }
-
-    override fun showErrorState() {
-    }
-
-    override fun hideErrorState() {
-    }
-
-    override fun showEmptyState() {
-    }
-
-    override fun hideEmptyState() {
-    }
 }
 
