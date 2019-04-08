@@ -7,4 +7,6 @@
     <string name="not_found_activity">You do not have any applications available to perform the requested action.
     </string>
     <string name="chooser_title">Complete action using</string>
+    <string name="fragment_article_title_text_view_empty_state_title">There are not available news.</string>
+    <string name="fragment_article_title_text_view_empty_state_message">Please go back and select another source to enjoy today fresh news.</string>
 </resources>

@@ -152,8 +152,10 @@ class NewsFragment : BaseFragment(), View.OnClickListener, ArticlesContract.View
     }
 
     override fun showEmptyState() {
+        fragment_articles_custom_view_empty_state.visibility = View.VISIBLE
     }
 
     override fun hideEmptyState() {
+        fragment_articles_custom_view_empty_state.visibility = View.GONE
     }
 }

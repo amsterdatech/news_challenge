@@ -19,9 +19,18 @@
             android:id="@+id/fragment_articles_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            tools:visibility="gone"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
             tools:layoutManager="android.support.v7.widget.LinearLayoutManager"
             tools:listitem="@layout/view_holder_regular_article"/>
+
+    <include layout="@layout/custom_view_empty_state"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             android:fillViewport="true"
+             android:fitsSystemWindows="true"
+             android:visibility="gone"
+             android:id="@+id/fragment_articles_custom_view_empty_state"/>
 
     <android.support.design.widget.AppBarLayout
             android:id="@+id/fragment_articles_app_bar"
