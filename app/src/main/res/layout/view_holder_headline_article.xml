@@ -8,6 +8,7 @@
         android:id="@+id/view_holder_headline_parent"
         android:foreground="?attr/selectableItemBackground"
         android:clickable="true"
+        android:fitsSystemWindows="true"
         android:focusable="true">
 
     <android.support.v7.widget.AppCompatImageView
@@ -17,10 +18,12 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintDimensionRatio="H,4:3"
             android:foreground="#60000000"
+            android:adjustViewBounds="true"
             android:scaleType="centerCrop"
             tools:background="@color/colorAccent"
             app:layout_constraintTop_toTopOf="parent"
-            android:id="@+id/view_holder_headline_thumbnail" app:layout_constraintHorizontal_bias="1.0"/>
+            android:id="@+id/view_holder_headline_thumbnail"
+            app:layout_constraintHorizontal_bias="1.0"/>
 
     <android.support.v7.widget.AppCompatTextView
             android:layout_width="0dp"

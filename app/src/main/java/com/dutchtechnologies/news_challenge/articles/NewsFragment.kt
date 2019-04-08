@@ -1,9 +1,14 @@
 package com.dutchtechnologies.news_challenge.articles
 
+import addOnScrollListener
+import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
+import android.support.v4.view.ViewCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.View
+import android.view.ViewGroup
 import com.dutchtechnologies.news_challenge.BuildConfig
 import com.dutchtechnologies.news_challenge.R
 import com.dutchtechnologies.news_challenge.base.BaseFragment
@@ -18,10 +23,13 @@ import kotlinx.android.synthetic.main.fragment_news.*
 import kotlinx.android.synthetic.main.fragment_news.view.*
 import javax.inject.Inject
 
-class NewsFragment : BaseFragment(), View.OnClickListener, ArticlesContract.View {
+class NewsFragment : BaseFragment(), View.OnClickListener, ArticlesContract.View , NewsAdapter.ScrollListener{
     lateinit var newsAdapter: NewsAdapter
     private var slug: String? = null
     private var name: String? = null
+
+    private var toolbarOpacity = 0
+    private val acceleratorAlpha = 40
 
     @Inject
     lateinit var articlesPresenter: ArticlesPresenter
@@ -57,8 +65,19 @@ class NewsFragment : BaseFragment(), View.OnClickListener, ArticlesContract.View
         (activity as HomeActivity).supportActionBar?.setDisplayShowTitleEnabled(false)
         (activity as HomeActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            activity?.window?.statusBarColor = Color.parseColor("#00000000")
+        }
+
+        ViewCompat.setOnApplyWindowInsetsListener(view.fragment_articles_parent) { v, insets ->
+            (view.fragment_articles_toolbar.layoutParams as ViewGroup.MarginLayoutParams).topMargin = insets.systemWindowInsetTop
+            insets.consumeSystemWindowInsets()
+        }
+
 
         view.fragment_articles_toolbar.title = name
+
+        view.fragment_articles_recycler_view.addOnScrollListener(this)
 
         val linearLayoutManager = LinearLayoutManager(activity)
         view.fragment_articles_recycler_view.layoutManager = linearLayoutManager
@@ -115,6 +134,7 @@ class NewsFragment : BaseFragment(), View.OnClickListener, ArticlesContract.View
 
     override fun onStop() {
         super.onStop()
+        fragment_articles_recycler_view.clearOnScrollListeners()
         articlesPresenter.stop()
     }
 
@@ -157,5 +177,39 @@ class NewsFragment : BaseFragment(), View.OnClickListener, ArticlesContract.View
 
     override fun hideEmptyState() {
         fragment_articles_custom_view_empty_state.visibility = View.GONE
+    }
+
+    override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+        var opacity = "ff"
+        if (fragment_articles_recycler_view.getChildAt(0).tag is NewsAdapter.HeadlineViewHolder) {
+
+            toolbarOpacity = 255
+
+            if (fragment_articles_recycler_view.getChildAt(0).bottom != 0 && fragment_articles_recycler_view.getChildAt(
+                    0
+                ).height != 0
+            )
+                toolbarOpacity -= (fragment_articles_recycler_view.getChildAt(0).bottom *
+                        255 / (fragment_articles_recycler_view.getChildAt(0).height))
+
+            if ((toolbarOpacity > 127) && (toolbarOpacity < 255 - acceleratorAlpha)) {
+                toolbarOpacity += acceleratorAlpha
+
+            } else if (toolbarOpacity + acceleratorAlpha > 255) {
+                toolbarOpacity = 255
+            }
+
+            opacity = Integer.toHexString(toolbarOpacity)
+        }
+
+        if (opacity.length == 1) {
+            opacity = "0$opacity"
+        }
+
+        val toolbarColor = "#${opacity}000000"
+        fragment_articles_toolbar?.setBackgroundColor(Color.parseColor(toolbarColor))
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            activity?.window?.statusBarColor = Color.parseColor(toolbarColor)
+        }
     }
 }

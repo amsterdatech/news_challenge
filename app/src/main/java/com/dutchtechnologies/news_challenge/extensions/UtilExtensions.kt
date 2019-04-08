@@ -3,6 +3,7 @@ import android.content.res.Configuration
 import android.graphics.drawable.ColorDrawable
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
+import android.support.v7.widget.RecyclerView
 import android.widget.ImageView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.Priority
@@ -10,6 +11,7 @@ import com.bumptech.glide.load.DecodeFormat
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.dutchtechnologies.news_challenge.R
+import com.dutchtechnologies.news_challenge.articles.NewsAdapter
 import com.dutchtechnologies.news_challenge.model.SearchRequestForm
 import java.net.URI
 import java.text.SimpleDateFormat
@@ -76,4 +78,17 @@ fun Date.formatToDayMonthName(): String {
 fun String.parseIsoDateFormat(): Date {
     val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
     return sdf.parse(this)
+}
+
+private var recyclerViewScrollListener: RecyclerViewScrollListener? = null
+
+private class RecyclerViewScrollListener(val scrollListener: NewsAdapter.ScrollListener) : RecyclerView.OnScrollListener() {
+    override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+        scrollListener.onScrolled(recyclerView, dx, dy)
+    }
+}
+
+fun RecyclerView.addOnScrollListener(scrollListener: NewsAdapter.ScrollListener) {
+    var recyclerViewScrollListener = RecyclerViewScrollListener(scrollListener)
+    addOnScrollListener(recyclerViewScrollListener as RecyclerViewScrollListener)
 }

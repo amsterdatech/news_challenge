@@ -4,7 +4,9 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:id="@+id/fragment_articles_parent"
+        android:fitsSystemWindows="true">
 
     <android.support.v4.widget.ContentLoadingProgressBar
             android:id="@+id/fragment_articles_custom_view_loading"
@@ -12,6 +14,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:fitsSystemWindows="true"
             android:visibility="gone"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
@@ -20,6 +23,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             tools:visibility="gone"
+            android:clipToPadding="false"
+            android:fitsSystemWindows="true"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
             tools:layoutManager="android.support.v7.widget.LinearLayoutManager"
             tools:listitem="@layout/view_holder_regular_article"/>
@@ -36,9 +41,8 @@
             android:id="@+id/fragment_articles_app_bar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@null"
             android:fitsSystemWindows="true"
-            android:elevation="20dp">
+            android:elevation="1dp">
 
         <android.support.v7.widget.Toolbar
                 android:id="@+id/fragment_articles_toolbar"

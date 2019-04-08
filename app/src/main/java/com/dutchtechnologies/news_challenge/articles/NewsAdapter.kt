@@ -108,4 +108,8 @@ class NewsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         }
 
     }
+
+    interface ScrollListener {
+        fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int)
+    }
 }
