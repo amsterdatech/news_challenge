@@ -33,7 +33,9 @@ class SourcesAdapter : RecyclerView.Adapter<SourcesAdapter.ViewHolder>() {
 
 
         fun bind(source: Source) {
-         with(source){
+            containerView.tag = this
+            containerView.setOnClickListener(onClick)
+            with(source){
              containerView.view_holder_sources_title.text = title
              containerView.view_holder_sources_description.text = description
              containerView.view_holder_sources_url.text = url

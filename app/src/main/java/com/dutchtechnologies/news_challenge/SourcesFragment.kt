@@ -5,6 +5,9 @@ import android.support.v7.widget.LinearLayoutManager
 import android.view.View
 import kotlinx.android.synthetic.main.fragment_source.*
 import kotlinx.android.synthetic.main.fragment_source.view.*
+import android.support.v7.widget.RecyclerView
+
+
 
 class SourcesFragment : BaseFragment(), View.OnClickListener {
     //    private lateinit var homeViewModel: HomeViewModel
@@ -27,13 +30,12 @@ class SourcesFragment : BaseFragment(), View.OnClickListener {
 
         val linearLayoutManager = LinearLayoutManager(activity)
         view.fragment_sources_recycler_view.layoutManager = linearLayoutManager
-
+        view.fragment_sources_recycler_view.setHasFixedSize(true)
         view.fragment_sources_recycler_view.addItemDecoration(DividerItemDecoration(view.context, R.drawable.list_divider))
 
 
         view.fragment_sources_recycler_view.adapter = sourcesAdapter
         sourcesAdapter.click = this
-
 
         Handler().postDelayed({
             fragment_sources_custom_view_loading.visibility = View.GONE
@@ -49,7 +51,7 @@ class SourcesFragment : BaseFragment(), View.OnClickListener {
 
     fun getSources(): List<Source> {
         val itineraries = mutableListOf<Source>()
-        for (i in 1..100) {
+        for (i in 1..30) {
             val itinerary = Source(
                 listOf("BBC", "Bloomberg", "CNN").shuffled().take(1)[0],
                 "News for up-to-the-minute news, breaking news, video, audio and feature stories.",
@@ -59,6 +61,23 @@ class SourcesFragment : BaseFragment(), View.OnClickListener {
         }
 
         return itineraries
+    }
+
+    override fun onClick(view: View?) {
+        when(view?.id){
+            R.id.view_holder_sources_parent -> {
+                val viewHolder = view?.tag as RecyclerView.ViewHolder
+                val position = viewHolder.adapterPosition
+                // viewHolder.getItemId();
+                // viewHolder.getItemViewType();
+                // viewHolder.itemView;
+                val currentSource = sourcesAdapter.items[position]
+                //Calls NewsActivity or Fragment
+
+            }
+
+        }
+
     }
 }
 
