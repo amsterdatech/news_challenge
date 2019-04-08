@@ -12,6 +12,8 @@ import com.bumptech.glide.request.RequestOptions
 import com.dutchtechnologies.news_challenge.R
 import com.dutchtechnologies.news_challenge.model.SearchRequestForm
 import java.net.URI
+import java.text.SimpleDateFormat
+import java.util.*
 
 //fun Context.isTablet(): Boolean = resources.getBoolean(R.bool.isTablet)
 //
@@ -65,3 +67,13 @@ inline fun <reified T : Any> Fragment.extra(key: String, defaultValue: T): T? {
 fun Context.isLandscape(): Boolean = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
 fun Context.isPortrait(): Boolean = resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+
+fun Date.formatToDayMonthName(): String {
+    val sdf = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
+    return sdf.format(this)
+}
+
+fun String.parseIsoDateFormat(): Date {
+    val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+    return sdf.parse(this)
+}

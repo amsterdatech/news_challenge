@@ -4,11 +4,13 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.dutchtechnologies.news_challenge.model.Article
 import com.dutchtechnologies.news_challenge.R
+import com.dutchtechnologies.news_challenge.model.Article
+import formatToDayMonthName
 import kotlinx.android.synthetic.main.view_holder_headline_article.view.*
 import kotlinx.android.synthetic.main.view_holder_regular_article.view.*
 import load
+import parseIsoDateFormat
 import kotlin.properties.Delegates
 
 class NewsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -71,8 +73,14 @@ class NewsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             with(article) {
                 containerView.view_holder_regular_thumbnail.load(thumbnail)
                 containerView.view_holder_regular_article_title.text = title
-                containerView.view_holder_regular_article_date_and_author.text =
-                    "${this.publishedDay} by ${this.author}"
+
+                val date = this.publishedDay
+                    .parseIsoDateFormat()?.formatToDayMonthName()
+
+                val author = if (this.author.isNotEmpty()) " by ${this.author}" else ""
+
+                containerView.view_holder_regular_article_date_and_author.text = "$date$author"
+
             }
         }
 
@@ -89,8 +97,13 @@ class NewsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             with(article) {
                 containerView.view_holder_headline_thumbnail.load(thumbnail, false)
                 containerView.view_holder_headline_article_title.text = title
-                containerView.view_holder_headline_article_date_and_author.text =
-                    "${this.publishedDay} by ${this.author}"
+
+                val date = this.publishedDay
+                    .parseIsoDateFormat()?.formatToDayMonthName()
+
+                val author = if (this.author.isNotEmpty()) " by ${this.author}" else ""
+
+                containerView.view_holder_headline_article_date_and_author.text = "$date$author"
             }
         }
 

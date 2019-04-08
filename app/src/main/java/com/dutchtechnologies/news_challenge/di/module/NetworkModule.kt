@@ -18,7 +18,7 @@ import javax.inject.Singleton
 @Module
 class NetworkModule {
     companion object {
-        private const val DATE_FORMAT = "dd-MM-yyyy'T'HH:mm:ss"
+        private const val DATE_FORMAT = "dd-MM-yyyy'T'HH:mm:ssZ"
         private const val NAMED_REST_SERVER_URL = "NAMED_REST_SERVER_URL"
 
     }
