@@ -1,0 +1,41 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="Theme.NewsApp" parent="Theme.Base">
+    </style>
+
+    <style name="Theme.Base" parent="Theme.AppCompat.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+
+        <item name="android:textColorPrimary">@android:color/white</item>
+        <item name="android:textColorSecondary">@android:color/white</item>
+
+        <!--<item name="colorControlNormal">@android:color/white</item>-->
+        <!--<item name="colorControlHighlight">@android:color/white</item>-->
+        <item name="android:windowBackground">@android:color/white</item>
+
+
+        <!--<item name="buttonStyle">@style/Base.Button.Normal</item>-->
+        <item name="toolbarStyle">@style/Base.Toolbar</item>
+        <!--<item name="android:alertDialogTheme">@style/Theme.Base.AlertDialog</item>-->
+        <!--<item name="alertDialogTheme">@style/Theme.Base.AlertDialog</item>-->
+        <!--<item name="actionModeStyle">@style/Base.ActionModeTheme</item>-->
+        <item name="windowActionModeOverlay">true</item>
+
+    </style>
+
+    <style name="Theme.BrandedLaunch" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowBackground">@drawable/layer_list_branded</item>
+    </style>
+
+    <!-- Base Toolbar -->
+    <style name="Base.Toolbar" parent="@style/Widget.AppCompat.Toolbar">
+        <item name="android:background">@color/colorPrimary</item>
+        <item name="titleTextColor">@android:color/white</item>
+        <!--<item name="titleTextAppearance">@style/Base.Toolbar.TextAppearance</item>-->
+        <!--<item name="android:textSize">@dimen/text_size_twenty</item>-->
+    </style>
+
+</resources>
