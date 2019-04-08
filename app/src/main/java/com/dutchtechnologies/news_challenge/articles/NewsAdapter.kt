@@ -71,7 +71,7 @@ class NewsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             containerView.tag = this
             containerView.setOnClickListener(onClick)
             with(article) {
-                containerView.view_holder_regular_thumbnail.load(thumbnail)
+                containerView.view_holder_regular_thumbnail.load(thumbnail, true, R.color.colorAccent)
                 containerView.view_holder_regular_article_title.text = title
 
                 val date = this.publishedDay
@@ -95,7 +95,7 @@ class NewsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             containerView.tag = this
             containerView.setOnClickListener(onClick)
             with(article) {
-                containerView.view_holder_headline_thumbnail.load(thumbnail, false)
+                containerView.view_holder_headline_thumbnail.load(thumbnail, false, R.color.colorPrimary)
                 containerView.view_holder_headline_article_title.text = title
 
                 val date = this.publishedDay

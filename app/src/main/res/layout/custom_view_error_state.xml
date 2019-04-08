@@ -10,23 +10,23 @@
         android:scrollbars="vertical">
 
     <android.support.v7.widget.LinearLayoutCompat
-            android:id="@+id/custom_view_empty_state_content_root"
+            android:id="@+id/custom_view_error_state_content_root"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
             android:orientation="vertical">
 
         <android.support.v7.widget.AppCompatImageView
-                android:id="@+id/custom_view_empty_state_image_view_icon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:id="@+id/custom_view_error_state_image_view_icon"
+                android:layout_width="72dp"
+                android:layout_height="72dp"
                 android:layout_gravity="center"
-                app:srcCompat="@drawable/ic_news_72dp"
+                app:srcCompat="@drawable/ic_signal_wifi_off_black_24dp"
                 android:tint="@color/placeholder"
                 tools:visibility="visible"/>
 
         <android.support.v7.widget.AppCompatTextView
-                android:id="@+id/custom_view_empty_state_text_view_title"
+                android:id="@+id/custom_view_error_state_text_view_title"
                 android:textSize="18sp"
                 android:layout_marginTop="24dp"
                 android:layout_marginLeft="48dp"
@@ -35,21 +35,32 @@
                 android:layout_width="match_parent"
                 android:gravity="center"
                 android:layout_height="wrap_content"
-                android:text="@string/fragment_article_title_text_view_empty_state_title"
+                android:text="@string/fragment_article_title_text_view_error_state_title"
                 tools:visibility="visible"/>
 
         <android.support.v7.widget.AppCompatTextView
-                android:id="@+id/custom_view_empty_state_text_view_message"
+                android:id="@+id/custom_view_error_state_text_view_message"
                 android:layout_marginTop="16dp"
                 android:textSize="16sp"
                 android:layout_marginLeft="40dp"
                 android:layout_marginRight="40dp"
                 android:layout_width="match_parent"
                 android:gravity="center"
-                android:textColor="@color/placeholder"
+                android:textColor="@android:color/white"
                 android:layout_height="wrap_content"
-                android:text="@string/fragment_article_title_text_view_empty_state_message"
+                android:text="@string/fragment_article_title_text_view_error_state_message"
                 tools:visibility="visible"/>
+
+        <android.support.v7.widget.AppCompatButton
+                android:id="@+id/custom_view_error_state_button_view_action"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="64dp"
+                android:layout_marginLeft="64dp"
+                android:layout_marginTop="48dp"
+                tools:text="@string/retry"
+                tools:visibility="visible"/>
+
 
     </android.support.v7.widget.LinearLayoutCompat>
 

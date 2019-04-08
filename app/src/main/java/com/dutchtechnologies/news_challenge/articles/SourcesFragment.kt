@@ -1,5 +1,7 @@
 package com.dutchtechnologies.news_challenge.articles
 
+import android.graphics.Color
+import android.os.Build
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.View
@@ -38,7 +40,12 @@ class SourcesFragment : BaseFragment(), View.OnClickListener, ArticlesContract.S
         (activity as HomeActivity).setSupportActionBar(view.fragment_sources_toolbar)
         (activity as HomeActivity).supportActionBar?.setDisplayShowTitleEnabled(false)
 
-        view.fragment_sources_toolbar.title = "News App"
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            activity?.window?.statusBarColor = context?.resources?.getColor(R.color.colorPrimary, null)
+                ?: Color.parseColor("#006200EE")
+        }
+
+        view.fragment_sources_toolbar.title = context?.resources?.getString(R.string.app_name)
 
         val linearLayoutManager = LinearLayoutManager(activity)
         view.fragment_sources_recycler_view.layoutManager = linearLayoutManager
@@ -50,44 +57,12 @@ class SourcesFragment : BaseFragment(), View.OnClickListener, ArticlesContract.S
             )
         )
 
-
         view.fragment_sources_recycler_view.adapter = sourcesAdapter
         sourcesAdapter.click = this
-
-//        Handler().postDelayed({
-//            fragment_sources_custom_view_loading.visibility = View.GONE
-//            fragment_sources_recycler_view.visibility = View.VISIBLE
-//
-//            sourcesAdapter.items = getSources()
-//
-//        }, 1500)
     }
 
     override fun screenName(): String? = ""
 
-
-    fun getSources(): List<Source> {
-        val itineraries = mutableListOf<Source>()
-        for (i in 1..30) {
-            val itinerary = Source(
-                listOf("bbc-news", "cnn", "bloomberg").shuffled().take(1)[0],
-                listOf("BBC", "Bloomberg", "CNN").shuffled().take(1)[0],
-                "News for up-to-the-minute news, breaking news, video, audio and feature stories.",
-                listOf(
-                    "http://www.bbc.co.uk/news",
-                    "http://www.abc.net.au/news",
-                    "http://www.aljazeera.com",
-                    "http://www.spiegel.de",
-                    "http://us.cnn.com",
-                    "http://espn.go.com",
-                    "http://news.nationalgeographic.com"
-                ).shuffled().take(1)[0]
-            )
-            itineraries.add(itinerary)
-        }
-
-        return itineraries
-    }
 
     override fun onClick(view: View?) {
         when (view?.id) {

@@ -32,10 +32,14 @@
     <include layout="@layout/custom_view_empty_state"
              android:layout_width="match_parent"
              android:layout_height="match_parent"
-             android:fillViewport="true"
-             android:fitsSystemWindows="true"
              android:visibility="gone"
              android:id="@+id/fragment_articles_custom_view_empty_state"/>
+
+    <include layout="@layout/custom_view_error_state"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             android:visibility="gone"
+             android:id="@+id/fragment_articles_custom_view_error_state"/>
 
     <android.support.v7.widget.Toolbar
             android:id="@+id/fragment_articles_toolbar"

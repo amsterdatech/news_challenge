@@ -44,7 +44,7 @@ class SourcesAdapter : RecyclerView.Adapter<SourcesAdapter.ViewHolder>() {
                 val thumb = source.url.host()
                 containerView.view_holder_sources_thumbnail.load("https://icon-locator.herokuapp.com/icon?url=$thumb&size=70..120..200")
                 containerView.view_holder_sources_title.text = title
-                containerView.view_holder_sources_description.text = description
+                containerView.view_holder_sources_category.text = source.category
                 containerView.view_holder_sources_url.text = url
             }
         }

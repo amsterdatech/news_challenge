@@ -32,12 +32,12 @@ import java.util.*
 //fun Context.isXxxhdpi(): Boolean = resources.getBoolean(R.bool.isXxxhdpi)
 
 
-fun ImageView.load(url: String?, lowQuality: Boolean = true) {
+fun ImageView.load(url: String?, lowQuality: Boolean = true, placeholder:Int = R.color.placeholder) {
     val options = RequestOptions()
         .priority(Priority.NORMAL)
         .diskCacheStrategy(DiskCacheStrategy.DATA)
         .format(if (lowQuality) DecodeFormat.PREFER_RGB_565 else DecodeFormat.PREFER_ARGB_8888)
-        .placeholder(ColorDrawable(ContextCompat.getColor(this.context, R.color.placeholder)))
+        .placeholder(ColorDrawable(ContextCompat.getColor(this.context, placeholder)))
         .error(ColorDrawable(ContextCompat.getColor(this.context, R.color.placeholder)))
         .dontAnimate()
 

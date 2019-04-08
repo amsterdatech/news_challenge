@@ -1,9 +1,12 @@
 package com.dutchtechnologies.news_challenge.articles
 
 import addOnScrollListener
+import android.content.Context
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
+import android.support.v4.content.ContextCompat
 import android.support.v4.view.ViewCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -23,8 +26,10 @@ import kotlinx.android.synthetic.main.fragment_news.*
 import kotlinx.android.synthetic.main.fragment_news.view.*
 import javax.inject.Inject
 
-class NewsFragment : BaseFragment(), View.OnClickListener, ArticlesContract.View , NewsAdapter.ScrollListener{
-    lateinit var newsAdapter: NewsAdapter
+class NewsFragment : BaseFragment(), View.OnClickListener, ArticlesContract.View, NewsAdapter.ScrollListener {
+    @Inject
+    lateinit var appContext: Context
+    private lateinit var newsAdapter: NewsAdapter
     private var slug: String? = null
     private var name: String? = null
 
@@ -70,7 +75,8 @@ class NewsFragment : BaseFragment(), View.OnClickListener, ArticlesContract.View
         }
 
         ViewCompat.setOnApplyWindowInsetsListener(view.fragment_articles_parent) { v, insets ->
-            (view.fragment_articles_toolbar.layoutParams as ViewGroup.MarginLayoutParams).topMargin = insets.systemWindowInsetTop
+            (view.fragment_articles_toolbar.layoutParams as ViewGroup.MarginLayoutParams).topMargin =
+                insets.systemWindowInsetTop
             insets.consumeSystemWindowInsets()
         }
 
@@ -138,11 +144,6 @@ class NewsFragment : BaseFragment(), View.OnClickListener, ArticlesContract.View
         articlesPresenter.stop()
     }
 
-    override fun onDestroy() {
-        Browser.cool( (activity as HomeActivity).baseContext)
-        super.onDestroy()
-    }
-
     override fun showResults(results: List<Article>) {
         newsAdapter.items += results
         fragment_articles_recycler_view.visibility = View.VISIBLE
@@ -166,12 +167,16 @@ class NewsFragment : BaseFragment(), View.OnClickListener, ArticlesContract.View
     }
 
     override fun showErrorState() {
+        paintToolbar()
+        fragment_articles_custom_view_error_state.visibility = View.VISIBLE
     }
 
     override fun hideErrorState() {
+        fragment_articles_custom_view_error_state.visibility = View.GONE
     }
 
     override fun showEmptyState() {
+        paintToolbar()
         fragment_articles_custom_view_empty_state.visibility = View.VISIBLE
     }
 
@@ -210,6 +215,15 @@ class NewsFragment : BaseFragment(), View.OnClickListener, ArticlesContract.View
         fragment_articles_toolbar?.setBackgroundColor(Color.parseColor(toolbarColor))
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             activity?.window?.statusBarColor = Color.parseColor(toolbarColor)
+        }
+    }
+
+    private fun paintToolbar() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            activity?.window?.statusBarColor = Color.parseColor("#FF6200EE")
+            view?.fragment_articles_toolbar?.background =
+                ColorDrawable(ContextCompat.getColor(appContext, R.color.colorPrimary))
+
         }
     }
 }

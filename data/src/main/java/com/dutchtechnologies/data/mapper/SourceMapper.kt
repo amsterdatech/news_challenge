@@ -8,7 +8,7 @@ open class SourceMapper @Inject constructor() :
     Mapper<SourceEntity, Source> {
 
     override fun mapFromEntity(type: SourceEntity): Source {
-        return Source(type.id, type.name,type.url)
+        return Source(type.id, type.name,type.url,type.category)
     }
 
 

@@ -62,7 +62,7 @@ class SourcesPresenter @Inject constructor(
             com.dutchtechnologies.news_challenge.model.Source(
                 it.id,
                 it.name,
-                "",
+                it.category,
                 it.url
             )
         }

@@ -9,4 +9,8 @@
     <string name="chooser_title">Complete action using</string>
     <string name="fragment_article_title_text_view_empty_state_title">There are not available news.</string>
     <string name="fragment_article_title_text_view_empty_state_message">Please go back and select another source to enjoy today fresh news.</string>
+    <string name="category_placeholder">News</string>
+    <string name="retry">Retry</string>
+    <string name="fragment_article_title_text_view_error_state_title">Connection Error</string>
+    <string name="fragment_article_title_text_view_error_state_message">Please check your internet connection and try again soon.</string>
 </resources>
