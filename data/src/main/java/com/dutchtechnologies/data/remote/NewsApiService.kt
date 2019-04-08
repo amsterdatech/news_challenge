@@ -11,14 +11,14 @@ interface NewsApiService {
     fun getArticles(
         @Query("sources") sources: String,
         @Query("apiKey") apiKey: String,
-        @Query("page") pageIndex: Int = 0,
+        @Query("page") pageIndex: Int = 1,
         @Query("pageSize") pageSize: Int = 25
     ): Single<ArticleWrapperResponse>
 
     @GET("v2/sources")
     fun getSources(
         @Query("apiKey") apiKey: String,
-        @Query("page") pageIndex: Int = 0,
+        @Query("page") pageIndex: Int = 1,
         @Query("pageSize") pageSize: Int = 100
     ): Single<SourceWrapperResponse>
 

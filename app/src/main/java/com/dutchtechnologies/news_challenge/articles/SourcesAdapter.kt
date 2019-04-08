@@ -46,6 +46,7 @@ class SourcesAdapter : RecyclerView.Adapter<SourcesAdapter.ViewHolder>() {
                 containerView.view_holder_sources_title.text = title
                 containerView.view_holder_sources_category.text = source.category
                 containerView.view_holder_sources_url.text = url
+                containerView.view_holder_sources_url.setOnClickListener(onClick)
             }
         }
     }

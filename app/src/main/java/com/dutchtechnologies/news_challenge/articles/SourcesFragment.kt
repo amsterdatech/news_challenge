@@ -8,6 +8,7 @@ import android.view.View
 import com.dutchtechnologies.news_challenge.BuildConfig
 import com.dutchtechnologies.news_challenge.R
 import com.dutchtechnologies.news_challenge.base.BaseFragment
+import com.dutchtechnologies.news_challenge.extensions.Browser
 import com.dutchtechnologies.news_challenge.fragmentAddToBackStack
 import com.dutchtechnologies.news_challenge.model.SearchRequestForm
 import com.dutchtechnologies.news_challenge.model.Source
@@ -59,12 +60,15 @@ class SourcesFragment : BaseFragment(), View.OnClickListener, ArticlesContract.S
 
         view.fragment_sources_recycler_view.adapter = sourcesAdapter
         sourcesAdapter.click = this
+
+        Browser.warm((activity as HomeActivity).baseContext)
     }
 
     override fun screenName(): String? = ""
 
 
     override fun onClick(view: View?) {
+
         when (view?.id) {
             R.id.view_holder_sources_parent -> {
                 val viewHolder = view?.tag as RecyclerView.ViewHolder
@@ -73,6 +77,7 @@ class SourcesFragment : BaseFragment(), View.OnClickListener, ArticlesContract.S
                 // viewHolder.getItemViewType();
                 // viewHolder.itemView;
                 val currentSource = sourcesAdapter.items[position]
+
                 (activity as HomeActivity).fragmentAddToBackStack(
                     R.id.home_container,
                     NewsFragment.newInstance(
@@ -80,6 +85,10 @@ class SourcesFragment : BaseFragment(), View.OnClickListener, ArticlesContract.S
                         currentSource.title
                     )
                 )
+            }
+
+            R.id.view_holder_sources_url -> {
+//                Browser.openIntern((activity as HomeActivity).baseContext, currentSource.url)
             }
 
         }

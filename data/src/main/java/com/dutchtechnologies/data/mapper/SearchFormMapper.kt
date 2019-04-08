@@ -9,13 +9,13 @@ open class SearchFormMapper @Inject constructor() : Mapper<SearchForm, SearchReq
 
     override fun mapFromEntity(type: SearchForm): SearchRequest {
         return SearchRequest(
-            type.apiKey, type.sources ?: ""
+            type.apiKey, type.sources ?: "", type.pageIndex
         )
     }
 
     override fun mapToEntity(type: SearchRequest): SearchForm {
         return SearchForm(
-            type.apiKey, type.sources
+            type.apiKey, type.sources, type.pageIndex
         )
     }
 

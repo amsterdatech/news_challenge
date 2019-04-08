@@ -39,6 +39,10 @@ class NewsFragment : BaseFragment(), View.OnClickListener, ArticlesContract.View
     @Inject
     lateinit var articlesPresenter: ArticlesPresenter
 
+    private var searchRequestForm: SearchRequestForm? = null
+
+    private lateinit var scrollListener: EndlessRecyclerViewScrollListener
+
 
     companion object {
 
@@ -83,6 +87,7 @@ class NewsFragment : BaseFragment(), View.OnClickListener, ArticlesContract.View
 
         view.fragment_articles_toolbar.title = name
 
+
         view.fragment_articles_recycler_view.addOnScrollListener(this)
 
         val linearLayoutManager = LinearLayoutManager(activity)
@@ -94,10 +99,20 @@ class NewsFragment : BaseFragment(), View.OnClickListener, ArticlesContract.View
             )
         )
 
+        scrollListener = object : EndlessRecyclerViewScrollListener(linearLayoutManager) {
+            override fun onLoadMore(page: Int, totalItemsCount: Int, view: RecyclerView) {
+                searchRequestForm?.pageIndex = page
+                articlesPresenter.search(searchRequestForm)
+            }
+        }
+
+        view.fragment_articles_recycler_view.addOnScrollListener(scrollListener)
+
         newsAdapter = NewsAdapter()
         view.fragment_articles_recycler_view.adapter = newsAdapter
         newsAdapter.click = this
 
+        scrollListener.resetState()
 
         Browser.warm((activity as HomeActivity).baseContext)
 
@@ -129,11 +144,10 @@ class NewsFragment : BaseFragment(), View.OnClickListener, ArticlesContract.View
         articlesPresenter.start()
 
         if (newsAdapter.items == null || newsAdapter.items.isEmpty()) {
-            articlesPresenter.search(
-                SearchRequestForm(
-                    apiKey = BuildConfig.API_KEY, sources = slug ?: ""
-                )
+            searchRequestForm = SearchRequestForm(
+                apiKey = BuildConfig.API_KEY, sources = slug ?: ""
             )
+            articlesPresenter.search(searchRequestForm)
         }
 
     }
@@ -216,6 +230,11 @@ class NewsFragment : BaseFragment(), View.OnClickListener, ArticlesContract.View
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             activity?.window?.statusBarColor = Color.parseColor(toolbarColor)
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+
+        super.onSaveInstanceState(outState)
     }
 
     private fun paintToolbar() {
