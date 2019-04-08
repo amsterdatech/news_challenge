@@ -12,19 +12,26 @@
         <item name="android:textColorPrimary">@android:color/white</item>
         <item name="android:textColorSecondary">@android:color/white</item>
 
-        <item name="android:windowTranslucentStatus" tools:targetApi="kitkat">false</item>
-
-
         <!--<item name="colorControlNormal">@android:color/white</item>-->
         <item name="colorControlHighlight">@color/colorAccent</item>
         <item name="android:windowBackground">@android:color/white</item>
+        <!--<item name="android:windowTranslucentNavigation">true</item>-->
+        <item name="android:windowDrawsSystemBarBackgrounds"
+              tools:targetApi="lollipop">true
+        </item>
 
 
     </style>
 
     <style name="Theme.BrandedLaunch" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="android:windowDrawsSystemBarBackgrounds" tools:targetApi="lollipop">true</item>
-        <item name="android:windowTranslucentStatus" tools:targetApi="kitkat">false</item>
+        <item name="android:windowDrawsSystemBarBackgrounds"
+              tools:targetApi="lollipop">true
+        </item>
+        <item name="android:windowTranslucentStatus"
+              tools:targetApi="kitkat">false
+        </item>
+        <item name="android:windowTranslucentNavigation">true</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowBackground">@drawable/layer_list_branded</item>
     </style>
 

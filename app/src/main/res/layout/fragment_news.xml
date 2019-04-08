@@ -14,6 +14,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:fillViewport="true"
             android:fitsSystemWindows="true"
             android:visibility="gone"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
@@ -25,7 +26,6 @@
             tools:visibility="gone"
             android:clipToPadding="false"
             android:fitsSystemWindows="true"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
             tools:layoutManager="android.support.v7.widget.LinearLayoutManager"
             tools:listitem="@layout/view_holder_regular_article"/>
 
@@ -37,23 +37,17 @@
              android:visibility="gone"
              android:id="@+id/fragment_articles_custom_view_empty_state"/>
 
-    <android.support.design.widget.AppBarLayout
-            android:id="@+id/fragment_articles_app_bar"
+    <android.support.v7.widget.Toolbar
+            android:id="@+id/fragment_articles_toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="?attr/actionBarSize"
             android:fitsSystemWindows="true"
-            android:elevation="1dp">
+            android:background="@color/transparent_white"
+            android:elevation="0dp"
+            app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light">>
 
-        <android.support.v7.widget.Toolbar
-                android:id="@+id/fragment_articles_toolbar"
-                style="@style/Base.Toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:fitsSystemWindows="true"
-                app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light">>
+    </android.support.v7.widget.Toolbar>
 
-        </android.support.v7.widget.Toolbar>
-    </android.support.design.widget.AppBarLayout>
 
 </android.support.design.widget.CoordinatorLayout>

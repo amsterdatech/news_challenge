@@ -66,7 +66,7 @@ class NewsFragment : BaseFragment(), View.OnClickListener, ArticlesContract.View
         (activity as HomeActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            activity?.window?.statusBarColor = Color.parseColor("#00000000")
+            activity?.window?.statusBarColor = Color.parseColor("#006200EE")
         }
 
         ViewCompat.setOnApplyWindowInsetsListener(view.fragment_articles_parent) { v, insets ->
@@ -206,7 +206,7 @@ class NewsFragment : BaseFragment(), View.OnClickListener, ArticlesContract.View
             opacity = "0$opacity"
         }
 
-        val toolbarColor = "#${opacity}000000"
+        val toolbarColor = "#${opacity}6200EE"
         fragment_articles_toolbar?.setBackgroundColor(Color.parseColor(toolbarColor))
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             activity?.window?.statusBarColor = Color.parseColor(toolbarColor)
