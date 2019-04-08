@@ -10,6 +10,7 @@ import com.bumptech.glide.load.DecodeFormat
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.dutchtechnologies.news_challenge.R
+import com.dutchtechnologies.news_challenge.model.SearchRequestForm
 import java.net.URI
 
 //fun Context.isTablet(): Boolean = resources.getBoolean(R.bool.isTablet)
@@ -55,6 +56,7 @@ inline fun <reified T : Any> Fragment.extra(key: String, defaultValue: T): T? {
         Boolean::class -> arguments?.getBoolean(key, defaultValue as Boolean) as T?
         Float::class -> arguments?.getFloat(key, defaultValue as Float) as T?
         Long::class -> arguments?.getLong(key, defaultValue as Long) as T?
+        SearchRequestForm::class -> arguments?.getParcelable<SearchRequestForm>(key) as T
         else -> throw UnsupportedOperationException("Not yet implemented")
     }
 }

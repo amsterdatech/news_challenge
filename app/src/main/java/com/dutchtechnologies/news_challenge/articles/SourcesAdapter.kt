@@ -1,9 +1,11 @@
-package com.dutchtechnologies.news_challenge
+package com.dutchtechnologies.news_challenge.articles
 
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.dutchtechnologies.news_challenge.R
+import com.dutchtechnologies.news_challenge.model.Source
 import host
 import kotlinx.android.synthetic.main.view_holder_source.view.*
 import load
@@ -14,13 +16,14 @@ class SourcesAdapter : RecyclerView.Adapter<SourcesAdapter.ViewHolder>() {
     lateinit var click: View.OnClickListener
 
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder = ViewHolder(
-        LayoutInflater.from(parent.context).inflate(
-            R.layout.view_holder_source,
-            parent,
-            false
-        ), click
-    )
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
+        ViewHolder(
+            LayoutInflater.from(parent.context).inflate(
+                R.layout.view_holder_source,
+                parent,
+                false
+            ), click
+        )
 
     override fun getItemCount(): Int = items.size
 

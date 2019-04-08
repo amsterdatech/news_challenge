@@ -1,15 +1,13 @@
-package com.dutchtechnologies.news_challenge
+package com.dutchtechnologies.news_challenge.base
 
-import android.arch.lifecycle.ViewModelProvider
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.app.AppCompatDelegate
 import android.view.MenuItem
 import android.view.View
 import dagger.android.support.DaggerAppCompatActivity
-import javax.inject.Inject
 
-abstract class BaseActivity : AppCompatActivity(), View.OnClickListener {
+abstract class BaseActivity : DaggerAppCompatActivity(), View.OnClickListener {
     init {
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
     }

@@ -1,16 +1,13 @@
-package com.dutchtechnologies.news_challenge
+package com.dutchtechnologies.news_challenge.base
 
-import android.arch.lifecycle.ViewModelProvider
 import android.os.Bundle
 import android.support.annotation.LayoutRes
-import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import dagger.android.support.DaggerFragment
-import javax.inject.Inject
 
-abstract class BaseFragment : Fragment(), View.OnClickListener {
+abstract class BaseFragment : DaggerFragment(), View.OnClickListener {
 //    @Inject
 //    lateinit var viewModelFactory: ViewModelProvider.Factory
 

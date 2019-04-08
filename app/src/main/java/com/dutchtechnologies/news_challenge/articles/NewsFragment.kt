@@ -1,24 +1,34 @@
-package com.dutchtechnologies.news_challenge
+package com.dutchtechnologies.news_challenge.articles
 
 import android.os.Bundle
-import android.os.Handler
 import android.support.v7.widget.LinearLayoutManager
 import android.view.View
+import com.dutchtechnologies.news_challenge.BuildConfig
+import com.dutchtechnologies.news_challenge.R
+import com.dutchtechnologies.news_challenge.base.BaseFragment
+import com.dutchtechnologies.news_challenge.model.Article
+import com.dutchtechnologies.news_challenge.model.SearchRequestForm
+import com.dutchtechnologies.news_challenge.popBackStack
+import com.dutchtechnologies.news_challenge.presentation.ArticlesContract
+import com.dutchtechnologies.news_challenge.presentation.ArticlesPresenter
 import extra
 import kotlinx.android.synthetic.main.fragment_news.*
 import kotlinx.android.synthetic.main.fragment_news.view.*
+import javax.inject.Inject
 
-class NewsFragment : BaseFragment(), View.OnClickListener {
+class NewsFragment : BaseFragment(), View.OnClickListener, ArticlesContract.View {
     lateinit var newsAdapter: NewsAdapter
     private var slug: String? = null
     private var name: String? = null
+
+    @Inject
+    lateinit var articlesPresenter: ArticlesPresenter
 
 
     companion object {
 
         const val EXTRA_SLUG = "extra_slug"
         const val EXTRA_NAME = "extra_name"
-
 
         fun newInstance(slug: String? = null, name: String? = null): NewsFragment {
             return NewsFragment().let {
@@ -37,7 +47,6 @@ class NewsFragment : BaseFragment(), View.OnClickListener {
     override fun setupView(view: View) {
         slug = extra(EXTRA_SLUG, "")
         name = extra(EXTRA_NAME, "")
-
 
 
         (activity as HomeActivity).setSupportActionBar(view.fragment_articles_toolbar)
@@ -62,20 +71,20 @@ class NewsFragment : BaseFragment(), View.OnClickListener {
         view.fragment_articles_recycler_view.adapter = newsAdapter
         newsAdapter.click = this
 
-        Handler().postDelayed({
-            fragment_articles_custom_view_loading.visibility = View.GONE
-            fragment_articles_recycler_view.visibility = View.VISIBLE
-
-            newsAdapter.items = getArticles()
-
-        }, 1000)
+//        Handler().postDelayed({
+//            fragment_articles_custom_view_loading.visibility = View.GONE
+//            fragment_articles_recycler_view.visibility = View.VISIBLE
+//
+//            newsAdapter.items = getArticles()
+//
+//        }, 1000)
     }
+
 
     override fun onClick(view: View?) {
         when (view?.id) {
             R.id.view_holder_regular_parent, R.id.view_holder_headline_parent -> {
-                //Call Article Detail
-
+                //Call Article Detail via CustomChromeTabs
             }
 
             else -> {
@@ -85,6 +94,61 @@ class NewsFragment : BaseFragment(), View.OnClickListener {
     }
 
     override fun screenName(): String? = ""
+
+
+    override fun onStart() {
+        super.onStart()
+        articlesPresenter.attachView(this)
+        articlesPresenter.start()
+
+        if (newsAdapter.items == null || newsAdapter.items.isEmpty()) {
+            articlesPresenter.search(
+                SearchRequestForm(
+                    apiKey = BuildConfig.API_KEY, sources = slug ?: ""
+                )
+            )
+        }
+
+    }
+
+    override fun onStop() {
+        super.onStop()
+        articlesPresenter.stop()
+    }
+
+    override fun showResults(results: List<Article>) {
+        newsAdapter.items += results
+        fragment_articles_recycler_view.visibility = View.VISIBLE
+
+    }
+
+    override fun setPresenter(presenter: ArticlesContract.ArticlesPresenter) {
+        articlesPresenter = presenter as ArticlesPresenter
+    }
+
+    override fun showProgress() {
+        fragment_articles_custom_view_loading.visibility = View.VISIBLE
+    }
+
+    override fun hideProgress() {
+        fragment_articles_custom_view_loading.visibility = View.GONE
+    }
+
+    override fun hideResults() {
+        fragment_articles_recycler_view.visibility = View.GONE
+    }
+
+    override fun showErrorState() {
+    }
+
+    override fun hideErrorState() {
+    }
+
+    override fun showEmptyState() {
+    }
+
+    override fun hideEmptyState() {
+    }
 
 
     fun getArticles(): List<Article> {

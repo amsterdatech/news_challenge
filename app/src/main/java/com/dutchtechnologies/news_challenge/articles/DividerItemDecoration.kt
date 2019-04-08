@@ -1,4 +1,4 @@
-package com.dutchtechnologies.news_challenge
+package com.dutchtechnologies.news_challenge.articles
 
 import android.content.Context
 import android.graphics.Canvas

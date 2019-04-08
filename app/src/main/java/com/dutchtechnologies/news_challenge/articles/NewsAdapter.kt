@@ -1,9 +1,11 @@
-package com.dutchtechnologies.news_challenge
+package com.dutchtechnologies.news_challenge.articles
 
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.dutchtechnologies.news_challenge.model.Article
+import com.dutchtechnologies.news_challenge.R
 import kotlinx.android.synthetic.main.view_holder_headline_article.view.*
 import kotlinx.android.synthetic.main.view_holder_regular_article.view.*
 import load
@@ -61,7 +63,8 @@ class NewsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
 
     class RegularViewHolder(var containerView: View, var onClick: View.OnClickListener? = null) :
-        RecyclerView.ViewHolder(containerView), ArticleViewHolder {
+        RecyclerView.ViewHolder(containerView),
+        ArticleViewHolder {
         override fun bindViews(article: Article) {
             containerView.tag = this
             containerView.setOnClickListener(onClick)
@@ -77,7 +80,8 @@ class NewsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     }
 
     class HeadlineViewHolder(var containerView: View, var onClick: View.OnClickListener? = null) :
-        RecyclerView.ViewHolder(containerView), ArticleViewHolder {
+        RecyclerView.ViewHolder(containerView),
+        ArticleViewHolder {
 
         override fun bindViews(article: Article) {
             containerView.tag = this

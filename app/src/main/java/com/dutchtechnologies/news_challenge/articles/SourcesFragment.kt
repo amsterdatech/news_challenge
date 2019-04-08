@@ -1,22 +1,35 @@
-package com.dutchtechnologies.news_challenge
+package com.dutchtechnologies.news_challenge.articles
 
-import android.os.Handler
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.View
+import com.dutchtechnologies.news_challenge.BuildConfig
+import com.dutchtechnologies.news_challenge.R
+import com.dutchtechnologies.news_challenge.base.BaseFragment
+import com.dutchtechnologies.news_challenge.fragmentAddToBackStack
+import com.dutchtechnologies.news_challenge.model.SearchRequestForm
+import com.dutchtechnologies.news_challenge.model.Source
+import com.dutchtechnologies.news_challenge.presentation.ArticlesContract
+import com.dutchtechnologies.news_challenge.presentation.SourcesPresenter
 import kotlinx.android.synthetic.main.fragment_source.*
 import kotlinx.android.synthetic.main.fragment_source.view.*
+import javax.inject.Inject
 
 
-class SourcesFragment : BaseFragment(), View.OnClickListener {
+class SourcesFragment : BaseFragment(), View.OnClickListener, ArticlesContract.SourceView {
+
     //    private lateinit var homeViewModel: HomeViewModel
     private val sourcesAdapter = SourcesAdapter()
+
+    @Inject
+    lateinit var sourcesPresenter: SourcesPresenter
 
 
     companion object {
         fun newInstance(): SourcesFragment {
             return SourcesFragment()
         }
+
     }
 
     override fun layoutResource(): Int = R.layout.fragment_source
@@ -41,13 +54,13 @@ class SourcesFragment : BaseFragment(), View.OnClickListener {
         view.fragment_sources_recycler_view.adapter = sourcesAdapter
         sourcesAdapter.click = this
 
-        Handler().postDelayed({
-            fragment_sources_custom_view_loading.visibility = View.GONE
-            fragment_sources_recycler_view.visibility = View.VISIBLE
-
-            sourcesAdapter.items = getSources()
-
-        }, 1500)
+//        Handler().postDelayed({
+//            fragment_sources_custom_view_loading.visibility = View.GONE
+//            fragment_sources_recycler_view.visibility = View.VISIBLE
+//
+//            sourcesAdapter.items = getSources()
+//
+//        }, 1500)
     }
 
     override fun screenName(): String? = ""
@@ -87,12 +100,67 @@ class SourcesFragment : BaseFragment(), View.OnClickListener {
                 val currentSource = sourcesAdapter.items[position]
                 (activity as HomeActivity).fragmentAddToBackStack(
                     R.id.home_container,
-                    NewsFragment.newInstance(currentSource.id, currentSource.title)
+                    NewsFragment.newInstance(
+                        currentSource.id,
+                        currentSource.title
+                    )
                 )
             }
 
         }
+    }
 
+
+    override fun onStart() {
+        super.onStart()
+        sourcesPresenter.attachView(this)
+        sourcesPresenter.start()
+
+        if (sourcesAdapter.items == null || sourcesAdapter.items.isEmpty()) {
+            sourcesPresenter.getSources(
+                SearchRequestForm(
+                    apiKey = BuildConfig.API_KEY
+                )
+            )
+        }
+
+    }
+
+    override fun onStop() {
+        super.onStop()
+        sourcesPresenter.stop()
+    }
+
+    override fun showResults(results: List<Source>) {
+        sourcesAdapter.items += results
+        fragment_sources_recycler_view.visibility = View.VISIBLE
+    }
+
+    override fun setPresenter(presenter: ArticlesContract.SourcesPresenter) {
+    }
+
+    override fun showProgress() {
+        fragment_sources_custom_view_loading.visibility = View.VISIBLE
+    }
+
+    override fun hideProgress() {
+        fragment_sources_custom_view_loading.visibility = View.GONE
+    }
+
+    override fun hideResults() {
+        fragment_sources_recycler_view.visibility = View.GONE
+    }
+
+    override fun showErrorState() {
+    }
+
+    override fun hideErrorState() {
+    }
+
+    override fun showEmptyState() {
+    }
+
+    override fun hideEmptyState() {
     }
 }
 

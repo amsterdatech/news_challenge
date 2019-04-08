@@ -1,10 +1,11 @@
-package com.dutchtechnologies.news_challenge
+package com.dutchtechnologies.news_challenge.articles
 
 import android.os.Bundle
-import android.support.design.widget.BottomNavigationView
-import android.support.v7.app.AppCompatActivity
 import com.dutchtechnologies.news_challenge.Navigation.Companion.DESTINATION_HOME
-import kotlinx.android.synthetic.main.activity_home.*
+import com.dutchtechnologies.news_challenge.R
+import com.dutchtechnologies.news_challenge.base.BaseActivity
+import com.dutchtechnologies.news_challenge.onDestinationSelected
+import com.dutchtechnologies.news_challenge.popBackStack
 
 class HomeActivity : BaseActivity() {
     override fun screenName(): String? {

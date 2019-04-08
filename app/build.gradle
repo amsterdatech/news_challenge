@@ -16,9 +16,12 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
 
-        resConfigs ("en")
+        buildConfigField 'String', 'REST_SERVER', '"https://newsapi.org/"'
+        buildConfigField 'String', 'API_KEY', '"a0db95067dcf4e58bb57743280be666b"'
 
-        if(project.hasProperty('devBuild')){
+        resConfigs("en")
+
+        if (project.hasProperty('devBuild')) {
             splits.abi.enable = false
             splits.density.enable = false
             aaptOptions.cruncherEnabled = false
@@ -34,6 +37,9 @@ android {
 }
 
 dependencies {
+    implementation project(':domain')
+    implementation project(':data')
+
 
     implementation kotlin
 

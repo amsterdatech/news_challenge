@@ -1,4 +1,4 @@
-package com.dutchtechnologies.news_challenge
+package com.dutchtechnologies.news_challenge.model
 
 data class Article(
     val title: String,

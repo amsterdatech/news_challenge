@@ -1,6 +1,6 @@
 package com.dutchtechnologies.news_challenge.di.module
 
-import com.dutchtechnologies.news_challenge.HomeActivity
+import com.dutchtechnologies.news_challenge.articles.HomeActivity
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
