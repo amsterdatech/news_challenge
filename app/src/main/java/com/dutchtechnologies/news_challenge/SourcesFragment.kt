@@ -2,10 +2,10 @@ package com.dutchtechnologies.news_challenge
 
 import android.os.Handler
 import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.view.View
 import kotlinx.android.synthetic.main.fragment_source.*
 import kotlinx.android.synthetic.main.fragment_source.view.*
-import android.support.v7.widget.RecyclerView
 
 
 class SourcesFragment : BaseFragment(), View.OnClickListener {
@@ -57,6 +57,7 @@ class SourcesFragment : BaseFragment(), View.OnClickListener {
         val itineraries = mutableListOf<Source>()
         for (i in 1..30) {
             val itinerary = Source(
+                listOf("bbc-news", "cnn", "bloomberg").shuffled().take(1)[0],
                 listOf("BBC", "Bloomberg", "CNN").shuffled().take(1)[0],
                 "News for up-to-the-minute news, breaking news, video, audio and feature stories.",
                 listOf(
@@ -84,9 +85,10 @@ class SourcesFragment : BaseFragment(), View.OnClickListener {
                 // viewHolder.getItemViewType();
                 // viewHolder.itemView;
                 val currentSource = sourcesAdapter.items[position]
-                //Calls NewsActivity or Fragment
-                //sourceAdapter[position].slug
-                (activity as HomeActivity).fragmentAddToBackStack(R.id.home_container, NewsFragment.newInstance())
+                (activity as HomeActivity).fragmentAddToBackStack(
+                    R.id.home_container,
+                    NewsFragment.newInstance(currentSource.id, currentSource.title)
+                )
             }
 
         }

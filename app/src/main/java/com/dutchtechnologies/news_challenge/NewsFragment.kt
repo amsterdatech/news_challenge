@@ -1,23 +1,45 @@
 package com.dutchtechnologies.news_challenge
 
+import android.os.Bundle
 import android.os.Handler
 import android.support.v7.widget.LinearLayoutManager
 import android.view.View
+import extra
 import kotlinx.android.synthetic.main.fragment_news.*
 import kotlinx.android.synthetic.main.fragment_news.view.*
 
 class NewsFragment : BaseFragment(), View.OnClickListener {
     lateinit var newsAdapter: NewsAdapter
+    private var slug: String? = null
+    private var name: String? = null
+
 
     companion object {
-        fun newInstance(): NewsFragment {
-            return NewsFragment()
+
+        const val EXTRA_SLUG = "extra_slug"
+        const val EXTRA_NAME = "extra_name"
+
+
+        fun newInstance(slug: String? = null, name: String? = null): NewsFragment {
+            return NewsFragment().let {
+                val bundle = Bundle()
+                bundle.putString(EXTRA_SLUG, slug)
+                bundle.putString(EXTRA_NAME, name)
+
+                it.arguments = bundle
+                return@let it
+            }
         }
     }
 
     override fun layoutResource(): Int = R.layout.fragment_news
 
     override fun setupView(view: View) {
+        slug = extra(EXTRA_SLUG, "")
+        name = extra(EXTRA_NAME, "")
+
+
+
         (activity as HomeActivity).setSupportActionBar(view.fragment_articles_toolbar)
         view.fragment_articles_toolbar.setNavigationOnClickListener(this)
 
@@ -25,7 +47,7 @@ class NewsFragment : BaseFragment(), View.OnClickListener {
         (activity as HomeActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
 
-        view.fragment_articles_toolbar.title = "CNN News"
+        view.fragment_articles_toolbar.title = name
 
         val linearLayoutManager = LinearLayoutManager(activity)
         view.fragment_articles_recycler_view.layoutManager = linearLayoutManager

@@ -1,6 +1,7 @@
 import android.content.Context
 import android.content.res.Configuration
 import android.graphics.drawable.ColorDrawable
+import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import android.widget.ImageView
 import com.bumptech.glide.Glide
@@ -45,6 +46,17 @@ fun String.host(): String {
     val uri = URI(this)
     val domain = uri.host;
     return if (domain.startsWith("www.")) domain.substring(4) else domain
+}
+
+inline fun <reified T : Any> Fragment.extra(key: String, defaultValue: T): T? {
+    return when (T::class) {
+        String::class -> arguments?.getString(key) as T?
+        Int::class -> arguments?.getInt(key, defaultValue as Int) as T?
+        Boolean::class -> arguments?.getBoolean(key, defaultValue as Boolean) as T?
+        Float::class -> arguments?.getFloat(key, defaultValue as Float) as T?
+        Long::class -> arguments?.getLong(key, defaultValue as Long) as T?
+        else -> throw UnsupportedOperationException("Not yet implemented")
+    }
 }
 
 
