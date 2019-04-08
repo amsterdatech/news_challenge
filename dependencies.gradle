@@ -35,6 +35,8 @@ ext {
     support = "com.android.support:support-v4:${supportLibraryVersion}"
     glide = "com.github.bumptech.glide:glide:${glideVersion}"
 
+    chromeTabs = "com.android.support:customtabs:${supportLibraryVersion}"
+
 
 
     retrofit = "com.squareup.retrofit2:retrofit:${retrofitVersion}"

@@ -60,7 +60,7 @@ class ArticlesPresenter @Inject constructor(
 
     private fun mapFromDomainToView(results: List<Article>): List<com.dutchtechnologies.news_challenge.model.Article> {
         return results.map {
-            ArticleView(it.title, it.desc, it.urlToImage, it.author, it.publishedAt)
+            ArticleView(it.title, it.desc, it.urlToImage, it.author, it.publishedAt,it.url)
         }
     }
 
