@@ -5,6 +5,7 @@ import android.arch.lifecycle.ViewModelProviders
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
+import android.support.v4.app.FragmentActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -46,15 +47,17 @@ class SourcesFragment : BaseFragment(), View.OnClickListener {
                         fragment_sources_custom_view_loading
                     )
 
-                    it.data?.run {
-                        sourcesAdapter.items += this
-                        sourcesAdapter.notifyDataSetChanged()
-                    }
-
                     if (sourcesAdapter.items.isNotEmpty()) {
                         fragment_sources_recycler_view.visible()
                         return@let
                     }
+
+                    it.data?.run {
+                        sourcesAdapter.items.clear()
+                        sourcesAdapter.items.addAll(this)
+                        sourcesAdapter.notifyDataSetChanged()
+                    }
+
                 }
 
                 ViewData.Status.ERROR -> {
@@ -78,7 +81,7 @@ class SourcesFragment : BaseFragment(), View.OnClickListener {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = super.onCreateView(inflater, container, savedInstanceState)
 
-        homeViewModel = ViewModelProviders.of(this, viewModelFactory)[HomeViewModel::class.java]
+        homeViewModel = ViewModelProviders.of(activity as FragmentActivity, viewModelFactory)[HomeViewModel::class.java]
         homeViewModel.liveDataSources().observe(this,changeObserver)
         homeViewModel.shouldFetch()
 

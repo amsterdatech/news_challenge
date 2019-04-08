@@ -17,12 +17,14 @@ class HomeActivity : BaseActivity() {
     }
 
     override fun setupView() {
-        onDestinationSelected(DESTINATION_HOME)
     }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if(savedInstanceState == null){
+            onDestinationSelected(DESTINATION_HOME)
+        }
     }
 
     override fun onBackPressed() {

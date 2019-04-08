@@ -12,7 +12,7 @@ import load
 import kotlin.properties.Delegates
 
 class SourcesAdapter : RecyclerView.Adapter<SourcesAdapter.ViewHolder>() {
-    var items: List<Source> by Delegates.observable(emptyList()) { _, _, _ -> notifyDataSetChanged() }
+    var items: MutableList<Source>  = mutableListOf()
     lateinit var click: View.OnClickListener
 
 

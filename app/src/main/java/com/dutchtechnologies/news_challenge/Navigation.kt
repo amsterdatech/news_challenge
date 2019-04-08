@@ -5,6 +5,7 @@ import android.support.annotation.StringDef
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentActivity
 import com.dutchtechnologies.news_challenge.Navigation.Companion.DESTINATION_HOME
+import com.dutchtechnologies.news_challenge.articles.NewsFragment
 import com.dutchtechnologies.news_challenge.articles.SourcesFragment
 
 const val BACK_STACK_ROOT_TAG = "root_fragment"
@@ -12,9 +13,11 @@ const val BACK_STACK_ROOT_TAG = "root_fragment"
 class Navigation {
     companion object {
         const val DESTINATION_HOME = "D_HOME"
+        const val DESTINATION_NEWS = "D_NEWS"
+
     }
 
-    @StringDef(DESTINATION_HOME)
+    @StringDef(DESTINATION_HOME, DESTINATION_NEWS)
     @Retention(AnnotationRetention.SOURCE)
     annotation class Destination
 }
@@ -55,7 +58,7 @@ fun FragmentActivity.getSelectedFragmentDestination(@Navigation.Destination frag
 private fun createFragmentDestinationInstance(@Navigation.Destination fragmentTag: String): Fragment =
     when (fragmentTag) {
         DESTINATION_HOME -> SourcesFragment.newInstance()
-        else -> SourcesFragment.newInstance()
+        else -> NewsFragment.newInstance()
     }
 
 fun FragmentActivity.fragmentAddToBackStack(@IdRes container: Int, fragment: Fragment) {
