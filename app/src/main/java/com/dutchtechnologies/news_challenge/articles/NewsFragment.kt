@@ -48,10 +48,8 @@ class NewsFragment : BaseFragment(), View.OnClickListener, NewsAdapter.ScrollLis
     @Inject
     lateinit var homeViewModel: HomeViewModel
 
-    @Inject
-    lateinit var articlesPresenter: ArticlesPresenter
 
-    private var searchRequestForm: SearchRequestForm? = SearchRequestForm(apiKey = BuildConfig.API_KEY)
+    private lateinit var searchRequestForm: SearchRequestForm
 
     private lateinit var scrollListener: EndlessRecyclerViewScrollListener
 
@@ -89,7 +87,7 @@ class NewsFragment : BaseFragment(), View.OnClickListener, NewsAdapter.ScrollLis
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = super.onCreateView(inflater, container, savedInstanceState)
+        Browser.warm((activity as HomeActivity).baseContext)
 
         slug = extra(EXTRA_SLUG, "")
         name = extra(EXTRA_NAME, "")
@@ -100,6 +98,9 @@ class NewsFragment : BaseFragment(), View.OnClickListener, NewsAdapter.ScrollLis
                 name = savedInstanceState.getString(EXTRA_NAME)
             }
         }
+
+
+        val view = super.onCreateView(inflater, container, savedInstanceState)
 
         homeViewModel = ViewModelProviders.of(activity as FragmentActivity, viewModelFactory)[HomeViewModel::class.java]
         homeViewModel
@@ -112,6 +113,10 @@ class NewsFragment : BaseFragment(), View.OnClickListener, NewsAdapter.ScrollLis
             sources = slug ?: ""
         )
 
+        if(savedInstanceState == null) {
+            homeViewModel.loadArticles(searchRequestForm)
+        }
+
         return view
     }
 
@@ -121,7 +126,6 @@ class NewsFragment : BaseFragment(), View.OnClickListener, NewsAdapter.ScrollLis
     override fun setupView(view: View) {
         setupToolbar(view)
         setupRecyclerView(view)
-        Browser.warm((activity as HomeActivity).baseContext)
     }
 
 
@@ -145,10 +149,16 @@ class NewsFragment : BaseFragment(), View.OnClickListener, NewsAdapter.ScrollLis
 
     override fun screenName(): String? = ""
 
+    override fun onResume() {
+        super.onResume()
+        fragment_articles_toolbar.title = name
+    }
 
-    override fun onStart() {
-        super.onStart()
-        homeViewModel.loadArticles(searchRequestForm)
+
+    override fun onStop() {
+        super.onStop()
+        homeViewModel.liveDataArticles().removeObservers(this)
+        fragment_articles_recycler_view.clearOnScrollListeners()
     }
 
 
@@ -222,12 +232,11 @@ class NewsFragment : BaseFragment(), View.OnClickListener, NewsAdapter.ScrollLis
 
     private fun setupToolbar(view: View) {
         (activity as HomeActivity).setSupportActionBar(view.fragment_articles_toolbar)
+        paintToolbar()
         view.fragment_articles_toolbar.setNavigationOnClickListener(this)
 
-        (activity as HomeActivity).supportActionBar?.setDisplayShowTitleEnabled(false)
         (activity as HomeActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        paintToolbar()
 
         ViewCompat.setOnApplyWindowInsetsListener(view.fragment_articles_parent) { v, insets ->
             (view.fragment_articles_toolbar.layoutParams as ViewGroup.MarginLayoutParams).topMargin =
@@ -235,9 +244,7 @@ class NewsFragment : BaseFragment(), View.OnClickListener, NewsAdapter.ScrollLis
             insets.consumeSystemWindowInsets()
         }
 
-
         view.fragment_articles_toolbar.title = name
-
     }
 
 

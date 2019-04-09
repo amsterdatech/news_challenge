@@ -1,15 +1,15 @@
 package com.dutchtechnologies.news_challenge.articles
 
-import android.arch.lifecycle.*
+import android.arch.lifecycle.LifecycleObserver
+import android.arch.lifecycle.MutableLiveData
+import android.arch.lifecycle.ViewModel
 import com.dutchtechnologies.domain.interactor.GetArticlesListSingleUseCase
 import com.dutchtechnologies.domain.interactor.GetSourcesListSingleUseCase
-import com.dutchtechnologies.news_challenge.BuildConfig
 import com.dutchtechnologies.news_challenge.base.ViewData
 import com.dutchtechnologies.news_challenge.mapper.SearchRequestMapper
 import com.dutchtechnologies.news_challenge.model.Article
 import com.dutchtechnologies.news_challenge.model.SearchRequestForm
 import com.dutchtechnologies.news_challenge.model.Source
-import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.observers.DisposableSingleObserver
 import javax.inject.Inject
 
@@ -33,7 +33,7 @@ class HomeViewModel @Inject constructor(
     fun liveDataArticles() = liveDataArticles
 
 
-    private fun loadSources(searchRequest: SearchRequestForm?) {
+    fun loadSources(searchRequest: SearchRequestForm?) {
         searchRequest?.pageIndex?.let {
             if (it == 1) {
                 liveDataSources.value =
@@ -41,10 +41,10 @@ class HomeViewModel @Inject constructor(
             }
         }
 
-        getSourcesUseCase
-            .execute(
-                SourceSubscriber(), mapper.mapFromView(searchRequest)
-            )
+        getSourcesUseCase.execute(
+            SourceSubscriber(), mapper.mapFromView(searchRequest)
+        )
+
     }
 
     fun loadArticles(searchRequest: SearchRequestForm?) {

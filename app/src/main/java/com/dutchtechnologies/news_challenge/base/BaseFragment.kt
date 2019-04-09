@@ -36,7 +36,6 @@ abstract class BaseFragment : DaggerFragment(), View.OnClickListener {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(layoutResource(), container, false)
         setupView(view)
-
         return view
     }
 

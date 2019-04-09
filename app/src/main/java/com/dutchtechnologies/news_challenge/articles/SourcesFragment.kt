@@ -11,6 +11,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.dutchtechnologies.news_challenge.BuildConfig
 import com.dutchtechnologies.news_challenge.Navigation
 import com.dutchtechnologies.news_challenge.R
 import com.dutchtechnologies.news_challenge.articles.NewsFragment.Companion.EXTRA_NAME
@@ -18,9 +19,10 @@ import com.dutchtechnologies.news_challenge.articles.NewsFragment.Companion.EXTR
 import com.dutchtechnologies.news_challenge.base.BaseFragment
 import com.dutchtechnologies.news_challenge.base.ViewData
 import com.dutchtechnologies.news_challenge.extensions.Browser
+import com.dutchtechnologies.news_challenge.model.SearchRequestForm
 import com.dutchtechnologies.news_challenge.model.Source
 import com.dutchtechnologies.news_challenge.onDestinationSelected
-import goneViews
+import gone
 import kotlinx.android.synthetic.main.fragment_source.*
 import kotlinx.android.synthetic.main.fragment_source.view.*
 import visible
@@ -34,43 +36,7 @@ class SourcesFragment : BaseFragment(), View.OnClickListener {
 
     private val sourcesAdapter = SourcesAdapter()
 
-    private val changeObserver = Observer<ViewData<List<Source>>> { value ->
-        value?.let {
-            when (it?.status) {
-                ViewData.Status.LOADING -> {
-                    goneViews(
-                        fragment_sources_recycler_view
-                    )
-                    fragment_sources_custom_view_loading.visible()
-                }
-
-                ViewData.Status.SUCCESS -> {
-                    goneViews(
-                        fragment_sources_custom_view_loading
-                    )
-
-                    if (sourcesAdapter.items.isNotEmpty()) {
-                        fragment_sources_recycler_view.visible()
-                        return@let
-                    }
-
-                    it.data?.run {
-                        sourcesAdapter.items.clear()
-                        sourcesAdapter.items.addAll(this)
-                        sourcesAdapter.notifyDataSetChanged()
-                    }
-
-                }
-
-                ViewData.Status.ERROR -> {
-                    goneViews(
-                        fragment_sources_custom_view_loading,
-                        fragment_sources_recycler_view
-                    )
-                }
-            }
-        }
-    }
+    private lateinit var searchRequestForm: SearchRequestForm
 
 
     companion object {
@@ -84,8 +50,48 @@ class SourcesFragment : BaseFragment(), View.OnClickListener {
         val view = super.onCreateView(inflater, container, savedInstanceState)
 
         homeViewModel = ViewModelProviders.of(activity as FragmentActivity, viewModelFactory)[HomeViewModel::class.java]
-        homeViewModel.liveDataSources().observe(this, changeObserver)
-        homeViewModel.shouldFetch()
+        homeViewModel
+            .liveDataSources()
+            .observe(this, Observer<ViewData<List<Source>>> { value ->
+                value?.let {
+                    when (it.status) {
+                        ViewData.Status.LOADING -> {
+                            fragment_sources_recycler_view.gone()
+                            fragment_sources_custom_view_loading.visible()
+                        }
+
+                        ViewData.Status.SUCCESS -> {
+                            fragment_sources_custom_view_loading.gone()
+
+                            it.data?.run {
+                                sourcesAdapter.items += this
+                                sourcesAdapter.notifyDataSetChanged()
+                            }
+
+                            if (sourcesAdapter.items.isEmpty())
+                            //Call Empty State
+                                fragment_sources_recycler_view.gone()
+                            else
+                                fragment_sources_recycler_view.visible()
+
+                        }
+
+                        ViewData.Status.ERROR -> {
+                            fragment_sources_custom_view_loading.gone()
+                            fragment_sources_recycler_view.visible()
+
+                        }
+                    }
+                }
+            })
+
+        searchRequestForm = SearchRequestForm(
+            apiKey = BuildConfig.API_KEY
+        )
+
+        if (savedInstanceState == null &&
+            homeViewModel.liveDataSources().value == null)
+            homeViewModel.loadSources(searchRequestForm)
 
         return view
     }
@@ -121,6 +127,11 @@ class SourcesFragment : BaseFragment(), View.OnClickListener {
             }
 
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Browser.cool((activity as HomeActivity).baseContext)
     }
 
     private fun setupRecyclerView(view: View) {

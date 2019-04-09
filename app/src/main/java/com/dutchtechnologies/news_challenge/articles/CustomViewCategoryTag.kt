@@ -1,6 +1,7 @@
 package com.dutchtechnologies.news_challenge.articles
 
 import android.content.Context
+import android.graphics.Typeface
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.AppCompatTextView
 import android.util.AttributeSet
@@ -22,18 +23,19 @@ class CustomViewCategoryTag : AppCompatTextView {
     }
 
     private fun build() {
-        setBackgroundColor(ContextCompat.getColor(context, R.color.custom_category_tag_semi_transparent))
-        setTextColor(ContextCompat.getColor(context, android.R.color.white))
+//        setBackgroundColor(ContextCompat.getColor(context, R.color.custom_category_tag_semi_transparent))
+        setTextColor(ContextCompat.getColor(context, R.color.placeholder))
         setTextSize(TypedValue.COMPLEX_UNIT_PX, context.resources.getDimension(R.dimen.text_size_twelve))
-        setPadding(
-            context.resources.getDimensionPixelSize(R.dimen.spacings_eight),
-            context.resources.getDimensionPixelSize(R.dimen.spacings_two),
-            context.resources.getDimensionPixelSize(R.dimen.spacings_eight),
-            context.resources.getDimensionPixelSize(R.dimen.spacings_two)
-        )
+//        setPadding(
+//            context.resources.getDimensionPixelSize(R.dimen.spacings_eight),
+//            context.resources.getDimensionPixelSize(R.dimen.spacings_two),
+//            context.resources.getDimensionPixelSize(R.dimen.spacings_eight),
+//            context.resources.getDimensionPixelSize(R.dimen.spacings_two)
+//        )
 
         text = context.getString(R.string.category_placeholder)
         isAllCaps = true
-        gravity = Gravity.CENTER
+        gravity = Gravity.LEFT
+        setTypeface(typeface, Typeface.BOLD)
     }
 }

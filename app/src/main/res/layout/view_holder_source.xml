@@ -47,8 +47,7 @@
             android:layout_height="wrap_content"
             tools:textSize="12sp"
             tools:textAllCaps="true"
-            android:gravity="center"
-            android:background="@color/custom_category_tag_semi_transparent"
+            tools:textColor="@color/placeholder"
             tools:text="@string/category_placeholder"
             app:layout_constraintStart_toStartOf="@+id/view_holder_sources_title"
             android:layout_marginTop="2dp">
