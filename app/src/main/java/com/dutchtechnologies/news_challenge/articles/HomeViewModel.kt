@@ -23,14 +23,11 @@ class HomeViewModel @Inject constructor(
     @Inject
     lateinit var mapper: SearchRequestMapper
 
-    private val compositeDisposable = CompositeDisposable()
-
     private val liveDataSources: MutableLiveData<ViewData<List<Source>>> = MutableLiveData()
 
     private val liveDataArticles: MutableLiveData<ViewData<List<Article>>> = MutableLiveData()
 
-
-    lateinit var searchRequest: SearchRequestForm
+    private lateinit var searchRequest: SearchRequestForm
 
     fun liveDataSources() = liveDataSources
     fun liveDataArticles() = liveDataArticles
@@ -54,41 +51,24 @@ class HomeViewModel @Inject constructor(
 
         searchRequest?.pageIndex?.let {
             if (it == 1) {
-                liveDataArticles.value =
-                    ViewData(ViewData.Status.LOADING)
+                liveDataArticles.value = ViewData(ViewData.Status.LOADING)
             }
         }
-        getArticlesListSingleUseCase.execute(
-            ArticleSubscriber(), mapper.mapFromView(
-                if (liveDataArticles == null) SearchRequestForm(
-                    apiKey = BuildConfig.API_KEY
-                ) else searchRequest
+
+
+        getArticlesListSingleUseCase
+            .execute(
+                ArticleSubscriber(),
+                mapper
+                    .mapFromView(searchRequest)
             )
-        )
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
-    fun shouldFetch() {
-        if (liveDataSources.value == null) {
-            searchRequest = SearchRequestForm(
-                apiKey = BuildConfig.API_KEY
-            )
-            loadSources(searchRequest)
-        }
-    }
-
-    fun shouldFetchArticles() {
-        if (liveDataArticles.value == null) {
-            searchRequest = SearchRequestForm(
-                apiKey = BuildConfig.API_KEY
-            )
-            loadArticles(searchRequest)
-        }
-    }
 
     override fun onCleared() {
-        compositeDisposable.dispose()
         super.onCleared()
+        getArticlesListSingleUseCase.dispose()
+        getSourcesUseCase.dispose()
     }
 
 

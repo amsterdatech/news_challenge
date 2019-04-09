@@ -46,7 +46,7 @@
                 android:layout_marginRight="40dp"
                 android:layout_width="match_parent"
                 android:gravity="center"
-                android:textColor="@android:color/white"
+                android:textColor="@color/placeholder"
                 android:layout_height="wrap_content"
                 android:text="@string/fragment_article_title_text_view_error_state_message"
                 tools:visibility="visible"/>
@@ -58,6 +58,7 @@
                 android:layout_marginRight="64dp"
                 android:layout_marginLeft="64dp"
                 android:layout_marginTop="48dp"
+                android:textColor="@android:color/white"
                 tools:text="@string/retry"
                 tools:visibility="visible"/>
 

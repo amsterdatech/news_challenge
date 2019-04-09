@@ -25,7 +25,6 @@ import com.dutchtechnologies.news_challenge.extensions.Browser
 import com.dutchtechnologies.news_challenge.model.Article
 import com.dutchtechnologies.news_challenge.model.SearchRequestForm
 import com.dutchtechnologies.news_challenge.popBackStack
-import com.dutchtechnologies.news_challenge.presentation.ArticlesContract
 import com.dutchtechnologies.news_challenge.presentation.ArticlesPresenter
 import extra
 import goneViews
@@ -52,7 +51,7 @@ class NewsFragment : BaseFragment(), View.OnClickListener, NewsAdapter.ScrollLis
     @Inject
     lateinit var articlesPresenter: ArticlesPresenter
 
-    private var searchRequestForm: SearchRequestForm? = null
+    private var searchRequestForm: SearchRequestForm? = SearchRequestForm(apiKey = BuildConfig.API_KEY)
 
     private lateinit var scrollListener: EndlessRecyclerViewScrollListener
 
@@ -60,52 +59,15 @@ class NewsFragment : BaseFragment(), View.OnClickListener, NewsAdapter.ScrollLis
         value?.let {
             when (it?.status) {
                 ViewData.Status.LOADING -> {
-                    goneViews(
-                        fragment_articles_recycler_view
-                    )
-                    fragment_articles_custom_view_loading.visible()
+                    handleLoading()
                 }
 
                 ViewData.Status.SUCCESS -> {
-                    goneViews(
-                        fragment_articles_custom_view_loading
-                    )
-
-                    it.data?.run {
-                        newsAdapter.items += this
-                        newsAdapter.notifyDataSetChanged()
-                    }
-
-                    if (newsAdapter.items.isNotEmpty()) {
-                        fragment_articles_recycler_view.visible()
-                        return@let
-                    }
-
-                    fragment_articles_custom_view_empty_state.visible()
+                    handleSuccess(it)
                 }
 
                 ViewData.Status.ERROR -> {
-
-                    if (it.error is IOException) {
-
-                    }
-
-                    if (it.error is HttpException) {
-                        when (it.error.code()) {
-                            426 -> {
-                                Log.d("ENDLESS END X)", "${it.error.message()}")
-                            }
-                            else -> {
-                                goneViews(
-                                    fragment_articles_custom_view_loading,
-                                    fragment_articles_recycler_view
-
-                                )
-
-                                fragment_articles_custom_view_error_state.visible()
-                            }
-                        }
-                    }
+                    handleError(it, it.error)
                 }
             }
         }
@@ -117,39 +79,46 @@ class NewsFragment : BaseFragment(), View.OnClickListener, NewsAdapter.ScrollLis
         const val EXTRA_SLUG = "extra_slug"
         const val EXTRA_NAME = "extra_name"
 
-        fun newInstance(slug: String? = null, name: String? = null): NewsFragment {
+        fun newInstance(bundle: Bundle?): NewsFragment {
             return NewsFragment().let {
-                val bundle = Bundle()
-                bundle.putString(EXTRA_SLUG, slug)
-                bundle.putString(EXTRA_NAME, name)
-
                 it.arguments = bundle
                 return@let it
             }
         }
     }
 
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = super.onCreateView(inflater, container, savedInstanceState)
 
-        homeViewModel =
-            ViewModelProviders.of(activity as FragmentActivity, viewModelFactory)[HomeViewModel::class.java]
-        homeViewModel.liveDataArticles().observe(this, articlesObserver)
+        slug = extra(EXTRA_SLUG, "")
+        name = extra(EXTRA_NAME, "")
 
-        if (savedInstanceState == null) {
-            homeViewModel.shouldFetchArticles()
+        if (savedInstanceState != null) {
+            if (savedInstanceState.containsKey(EXTRA_SLUG)) {
+                slug = savedInstanceState.getString(EXTRA_SLUG)
+                name = savedInstanceState.getString(EXTRA_NAME)
+            }
         }
+
+        homeViewModel = ViewModelProviders.of(activity as FragmentActivity, viewModelFactory)[HomeViewModel::class.java]
+        homeViewModel
+            .liveDataArticles()
+            .observe(this, articlesObserver)
+
+
+        searchRequestForm = SearchRequestForm(
+            apiKey = BuildConfig.API_KEY,
+            sources = slug ?: ""
+        )
 
         return view
     }
 
-    override fun layoutResource()
-            : Int = R.layout.fragment_news
+    override fun layoutResource(): Int = R.layout.fragment_news
+
 
     override fun setupView(view: View) {
-        slug = extra(EXTRA_SLUG, "")
-        name = extra(EXTRA_NAME, "")
-
         setupToolbar(view)
         setupRecyclerView(view)
         Browser.warm((activity as HomeActivity).baseContext)
@@ -161,7 +130,7 @@ class NewsFragment : BaseFragment(), View.OnClickListener, NewsAdapter.ScrollLis
     ) {
         when (view?.id) {
             R.id.view_holder_regular_parent, R.id.view_holder_headline_parent -> {
-                val viewHolder = view?.tag as RecyclerView.ViewHolder
+                val viewHolder = view.tag as RecyclerView.ViewHolder
                 val position = viewHolder.adapterPosition
                 val article = newsAdapter.items[position]
                 Browser.openIntern((activity as HomeActivity).baseContext, article.url)
@@ -174,30 +143,14 @@ class NewsFragment : BaseFragment(), View.OnClickListener, NewsAdapter.ScrollLis
         }
     }
 
-    override fun screenName()
-            : String
-    ? = ""
+    override fun screenName(): String? = ""
 
 
     override fun onStart() {
         super.onStart()
-        articlesPresenter.attachView(this)
-        articlesPresenter.start()
-
-        if (newsAdapter.items == null || newsAdapter.items.isEmpty()) {
-            searchRequestForm = SearchRequestForm(
-                apiKey = BuildConfig.API_KEY, sources = slug ?: ""
-            )
-            articlesPresenter.search(searchRequestForm)
-        }
-
+        homeViewModel.loadArticles(searchRequestForm)
     }
 
-    override fun onStop() {
-        super.onStop()
-        fragment_articles_recycler_view.clearOnScrollListeners()
-        articlesPresenter.stop()
-    }
 
     override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
         var opacity = "ff"
@@ -234,7 +187,8 @@ class NewsFragment : BaseFragment(), View.OnClickListener, NewsAdapter.ScrollLis
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-
+        outState.putString(EXTRA_NAME, name)
+        outState.putString(EXTRA_SLUG, slug)
         super.onSaveInstanceState(outState)
     }
 
@@ -294,5 +248,53 @@ class NewsFragment : BaseFragment(), View.OnClickListener, NewsAdapter.ScrollLis
                 ColorDrawable(ContextCompat.getColor(appContext, R.color.colorPrimary))
 
         }
+    }
+
+
+    private fun handleError(it: ViewData<List<Article>>, error: Throwable?) {
+        if (it.error is IOException) {
+
+        }
+
+        if (it.error is HttpException) {
+            when (it.error.code()) {
+                426 -> {
+                    Log.d("ENDLESS END X)", it.error.message())
+                }
+                else -> {
+                    goneViews(
+                        fragment_articles_custom_view_loading,
+                        fragment_articles_recycler_view
+                    )
+
+                    fragment_articles_custom_view_error_state.visible()
+                }
+            }
+        }
+    }
+
+    private fun handleSuccess(it: ViewData<List<Article>>) {
+        goneViews(
+            fragment_articles_custom_view_loading
+        )
+
+        it.data?.run {
+            newsAdapter.items += this
+            newsAdapter.notifyDataSetChanged()
+        }
+
+        if (newsAdapter.items.isNotEmpty()) {
+            fragment_articles_recycler_view.visible()
+            return
+        }
+
+        fragment_articles_custom_view_empty_state.visible()
+    }
+
+    private fun handleLoading() {
+        goneViews(
+            fragment_articles_recycler_view
+        )
+        fragment_articles_custom_view_loading.visible()
     }
 }

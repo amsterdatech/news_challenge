@@ -11,17 +11,19 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.dutchtechnologies.news_challenge.Navigation
 import com.dutchtechnologies.news_challenge.R
+import com.dutchtechnologies.news_challenge.articles.NewsFragment.Companion.EXTRA_NAME
+import com.dutchtechnologies.news_challenge.articles.NewsFragment.Companion.EXTRA_SLUG
 import com.dutchtechnologies.news_challenge.base.BaseFragment
 import com.dutchtechnologies.news_challenge.base.ViewData
 import com.dutchtechnologies.news_challenge.extensions.Browser
-import com.dutchtechnologies.news_challenge.fragmentAddToBackStack
 import com.dutchtechnologies.news_challenge.model.Source
+import com.dutchtechnologies.news_challenge.onDestinationSelected
 import goneViews
 import kotlinx.android.synthetic.main.fragment_source.*
 import kotlinx.android.synthetic.main.fragment_source.view.*
 import visible
-import withViewModel
 import javax.inject.Inject
 
 
@@ -82,7 +84,7 @@ class SourcesFragment : BaseFragment(), View.OnClickListener {
         val view = super.onCreateView(inflater, container, savedInstanceState)
 
         homeViewModel = ViewModelProviders.of(activity as FragmentActivity, viewModelFactory)[HomeViewModel::class.java]
-        homeViewModel.liveDataSources().observe(this,changeObserver)
+        homeViewModel.liveDataSources().observe(this, changeObserver)
         homeViewModel.shouldFetch()
 
         return view
@@ -99,23 +101,19 @@ class SourcesFragment : BaseFragment(), View.OnClickListener {
     override fun screenName(): String? = ""
 
     override fun onClick(view: View?) {
-
         when (view?.id) {
             R.id.view_holder_sources_parent -> {
-                val viewHolder = view?.tag as RecyclerView.ViewHolder
+                val viewHolder = view.tag as RecyclerView.ViewHolder
                 val position = viewHolder.adapterPosition
-                // viewHolder.getItemId();
-                // viewHolder.getItemViewType();
-                // viewHolder.itemView;
                 val currentSource = sourcesAdapter.items[position]
 
-                (activity as HomeActivity).fragmentAddToBackStack(
-                    R.id.home_container,
-                    NewsFragment.newInstance(
-                        currentSource.id,
-                        currentSource.title
-                    )
-                )
+                (activity as HomeActivity)
+                    .onDestinationSelected(Navigation.DESTINATION_NEWS,
+                        Bundle()
+                            .apply {
+                                putString(EXTRA_SLUG, currentSource.id)
+                                putString(EXTRA_NAME, currentSource.title)
+                            })
             }
 
             R.id.view_holder_sources_url -> {
