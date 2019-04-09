@@ -1,10 +1,12 @@
 package com.dutchtechnologies.news_challenge
 
+import android.os.Bundle
 import android.support.annotation.IdRes
 import android.support.annotation.StringDef
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentActivity
 import com.dutchtechnologies.news_challenge.Navigation.Companion.DESTINATION_HOME
+import com.dutchtechnologies.news_challenge.articles.NewsFragment
 import com.dutchtechnologies.news_challenge.articles.SourcesFragment
 
 const val BACK_STACK_ROOT_TAG = "root_fragment"
@@ -12,20 +14,22 @@ const val BACK_STACK_ROOT_TAG = "root_fragment"
 class Navigation {
     companion object {
         const val DESTINATION_HOME = "D_HOME"
+        const val DESTINATION_NEWS = "D_NEWS"
+
     }
 
-    @StringDef(DESTINATION_HOME)
+    @StringDef(DESTINATION_HOME, DESTINATION_NEWS)
     @Retention(AnnotationRetention.SOURCE)
     annotation class Destination
 }
 
-fun FragmentActivity.onDestinationSelected(@Navigation.Destination fragmentTag: String) {
+fun FragmentActivity.onDestinationSelected(@Navigation.Destination fragmentTag: String, bundle: Bundle? = null) {
 
     supportFragmentManager.beginTransaction()
         .setCustomAnimations(R.anim.fade_in, R.anim.fade_out, R.anim.fade_in, R.anim.fade_out)
         .replace(
             R.id.home_container,
-            getSelectedFragmentDestination(fragmentTag),
+            getSelectedFragmentDestination(fragmentTag, bundle),
             fragmentTag
         )
         .addToBackStack(BACK_STACK_ROOT_TAG)
@@ -42,20 +46,20 @@ fun FragmentActivity.addFragmentOnTop(fragment: Fragment) {
         .commitAllowingStateLoss()
 }
 
-fun FragmentActivity.getSelectedFragmentDestination(@Navigation.Destination fragmentTag: String): Fragment {
+fun FragmentActivity.getSelectedFragmentDestination(@Navigation.Destination fragmentTag: String, bundle: Bundle? = null): Fragment {
     var destinationFragment = supportFragmentManager.findFragmentByTag(fragmentTag)
 
     if (destinationFragment == null) {
-        destinationFragment = createFragmentDestinationInstance(fragmentTag)
+        destinationFragment = createFragmentDestinationInstance(fragmentTag, bundle)
     }
 
     return destinationFragment
 }
 
-private fun createFragmentDestinationInstance(@Navigation.Destination fragmentTag: String): Fragment =
+private fun createFragmentDestinationInstance(@Navigation.Destination fragmentTag: String, bundle: Bundle? = null): Fragment =
     when (fragmentTag) {
         DESTINATION_HOME -> SourcesFragment.newInstance()
-        else -> SourcesFragment.newInstance()
+        else -> NewsFragment.newInstance(bundle)
     }
 
 fun FragmentActivity.fragmentAddToBackStack(@IdRes container: Int, fragment: Fragment) {

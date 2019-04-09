@@ -1,30 +1,37 @@
 package com.dutchtechnologies.news_challenge.articles
 
-import android.arch.lifecycle.*
+import android.arch.lifecycle.LifecycleObserver
+import android.arch.lifecycle.MutableLiveData
+import android.arch.lifecycle.ViewModel
+import com.dutchtechnologies.domain.interactor.GetArticlesListSingleUseCase
 import com.dutchtechnologies.domain.interactor.GetSourcesListSingleUseCase
-import com.dutchtechnologies.news_challenge.BuildConfig
 import com.dutchtechnologies.news_challenge.base.ViewData
 import com.dutchtechnologies.news_challenge.mapper.SearchRequestMapper
+import com.dutchtechnologies.news_challenge.model.Article
 import com.dutchtechnologies.news_challenge.model.SearchRequestForm
 import com.dutchtechnologies.news_challenge.model.Source
-import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.observers.DisposableSingleObserver
 import javax.inject.Inject
 
-class HomeViewModel @Inject constructor(private var getSourcesUseCase: GetSourcesListSingleUseCase) :
+class HomeViewModel @Inject constructor(
+    private var getSourcesUseCase: GetSourcesListSingleUseCase,
+    private var getArticlesListSingleUseCase: GetArticlesListSingleUseCase
+) :
     ViewModel(), LifecycleObserver {
 
 
     @Inject
     lateinit var mapper: SearchRequestMapper
 
-    private val compositeDisposable = CompositeDisposable()
-
     private val liveDataSources: MutableLiveData<ViewData<List<Source>>> = MutableLiveData()
 
-    lateinit var searchRequest: SearchRequestForm
+    private val liveDataArticles: MutableLiveData<ViewData<List<Article>>> = MutableLiveData()
+
+    private lateinit var searchRequest: SearchRequestForm
 
     fun liveDataSources() = liveDataSources
+    fun liveDataArticles() = liveDataArticles
+
 
     fun loadSources(searchRequest: SearchRequestForm?) {
         searchRequest?.pageIndex?.let {
@@ -34,25 +41,34 @@ class HomeViewModel @Inject constructor(private var getSourcesUseCase: GetSource
             }
         }
 
-        getSourcesUseCase
+        getSourcesUseCase.execute(
+            SourceSubscriber(), mapper.mapFromView(searchRequest)
+        )
+
+    }
+
+    fun loadArticles(searchRequest: SearchRequestForm?) {
+
+        searchRequest?.pageIndex?.let {
+            if (it == 1) {
+                liveDataArticles.value = ViewData(ViewData.Status.LOADING)
+            }
+        }
+
+
+        getArticlesListSingleUseCase
             .execute(
-                SourceSubscriber(), mapper.mapFromView(searchRequest)
+                ArticleSubscriber(),
+                mapper
+                    .mapFromView(searchRequest)
             )
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
-    fun shouldFetch() {
-        if (liveDataSources.value == null) {
-            searchRequest = SearchRequestForm(
-                apiKey = BuildConfig.API_KEY
-            )
-            loadSources(searchRequest)
-        }
-    }
 
     override fun onCleared() {
-        compositeDisposable.dispose()
         super.onCleared()
+        getArticlesListSingleUseCase.dispose()
+        getSourcesUseCase.dispose()
     }
 
 
@@ -85,6 +101,12 @@ class HomeViewModel @Inject constructor(private var getSourcesUseCase: GetSource
         }
     }
 
+    private fun mapArticleFromDomainToView(results: List<com.dutchtechnologies.domain.Article>): List<com.dutchtechnologies.news_challenge.model.Article> {
+        return results.map {
+            Article(it.title, it.desc, it.urlToImage, it.author, it.publishedAt, it.url)
+        }
+    }
+
     inner class SourceSubscriber :
         DisposableSingleObserver<List<com.dutchtechnologies.domain.Source>>() {
 
@@ -95,6 +117,21 @@ class HomeViewModel @Inject constructor(private var getSourcesUseCase: GetSource
 
         override fun onError(exception: Throwable) {
             handleError(exception)
+        }
+
+    }
+
+    inner class ArticleSubscriber :
+        DisposableSingleObserver<List<com.dutchtechnologies.domain.Article>>() {
+
+
+        override fun onSuccess(t: List<com.dutchtechnologies.domain.Article>) {
+            liveDataArticles.value = ViewData(ViewData.Status.SUCCESS, mapArticleFromDomainToView(t))
+        }
+
+        override fun onError(exception: Throwable) {
+            liveDataArticles.value = ViewData(ViewData.Status.ERROR, error = exception)
+
         }
 
     }

@@ -1,32 +1,41 @@
 package com.dutchtechnologies.news_challenge.articles
 
 import addOnScrollListener
+import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
+import android.support.v4.app.FragmentActivity
 import android.support.v4.content.ContextCompat
 import android.support.v4.view.ViewCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.dutchtechnologies.news_challenge.BuildConfig
 import com.dutchtechnologies.news_challenge.R
 import com.dutchtechnologies.news_challenge.base.BaseFragment
+import com.dutchtechnologies.news_challenge.base.ViewData
 import com.dutchtechnologies.news_challenge.extensions.Browser
 import com.dutchtechnologies.news_challenge.model.Article
 import com.dutchtechnologies.news_challenge.model.SearchRequestForm
 import com.dutchtechnologies.news_challenge.popBackStack
-import com.dutchtechnologies.news_challenge.presentation.ArticlesContract
 import com.dutchtechnologies.news_challenge.presentation.ArticlesPresenter
 import extra
+import goneViews
 import kotlinx.android.synthetic.main.fragment_news.*
 import kotlinx.android.synthetic.main.fragment_news.view.*
+import retrofit2.HttpException
+import visible
+import java.io.IOException
 import javax.inject.Inject
 
-class NewsFragment : BaseFragment(), View.OnClickListener, ArticlesContract.View, NewsAdapter.ScrollListener {
+class NewsFragment : BaseFragment(), View.OnClickListener, NewsAdapter.ScrollListener {
     @Inject
     lateinit var appContext: Context
     private lateinit var newsAdapter: NewsAdapter
@@ -37,11 +46,30 @@ class NewsFragment : BaseFragment(), View.OnClickListener, ArticlesContract.View
     private val acceleratorAlpha = 40
 
     @Inject
-    lateinit var articlesPresenter: ArticlesPresenter
+    lateinit var homeViewModel: HomeViewModel
 
-    private var searchRequestForm: SearchRequestForm? = null
+
+    private lateinit var searchRequestForm: SearchRequestForm
 
     private lateinit var scrollListener: EndlessRecyclerViewScrollListener
+
+    private val articlesObserver = Observer<ViewData<List<Article>>> { value ->
+        value?.let {
+            when (it?.status) {
+                ViewData.Status.LOADING -> {
+                    handleLoading()
+                }
+
+                ViewData.Status.SUCCESS -> {
+                    handleSuccess(it)
+                }
+
+                ViewData.Status.ERROR -> {
+                    handleError(it, it.error)
+                }
+            }
+        }
+    }
 
 
     companion object {
@@ -49,80 +77,64 @@ class NewsFragment : BaseFragment(), View.OnClickListener, ArticlesContract.View
         const val EXTRA_SLUG = "extra_slug"
         const val EXTRA_NAME = "extra_name"
 
-        fun newInstance(slug: String? = null, name: String? = null): NewsFragment {
+        fun newInstance(bundle: Bundle?): NewsFragment {
             return NewsFragment().let {
-                val bundle = Bundle()
-                bundle.putString(EXTRA_SLUG, slug)
-                bundle.putString(EXTRA_NAME, name)
-
                 it.arguments = bundle
                 return@let it
             }
         }
     }
 
-    override fun layoutResource(): Int = R.layout.fragment_news
 
-    override fun setupView(view: View) {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        Browser.warm((activity as HomeActivity).baseContext)
+
         slug = extra(EXTRA_SLUG, "")
         name = extra(EXTRA_NAME, "")
 
-
-        (activity as HomeActivity).setSupportActionBar(view.fragment_articles_toolbar)
-        view.fragment_articles_toolbar.setNavigationOnClickListener(this)
-
-        (activity as HomeActivity).supportActionBar?.setDisplayShowTitleEnabled(false)
-        (activity as HomeActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            activity?.window?.statusBarColor = Color.parseColor("#006200EE")
-        }
-
-        ViewCompat.setOnApplyWindowInsetsListener(view.fragment_articles_parent) { v, insets ->
-            (view.fragment_articles_toolbar.layoutParams as ViewGroup.MarginLayoutParams).topMargin =
-                insets.systemWindowInsetTop
-            insets.consumeSystemWindowInsets()
-        }
-
-
-        view.fragment_articles_toolbar.title = name
-
-
-        view.fragment_articles_recycler_view.addOnScrollListener(this)
-
-        val linearLayoutManager = LinearLayoutManager(activity)
-        view.fragment_articles_recycler_view.layoutManager = linearLayoutManager
-        view.fragment_articles_recycler_view.addItemDecoration(
-            DividerItemDecoration(
-                view.context,
-                R.drawable.list_divider
-            )
-        )
-
-        scrollListener = object : EndlessRecyclerViewScrollListener(linearLayoutManager) {
-            override fun onLoadMore(page: Int, totalItemsCount: Int, view: RecyclerView) {
-                searchRequestForm?.pageIndex = page
-                articlesPresenter.search(searchRequestForm)
+        if (savedInstanceState != null) {
+            if (savedInstanceState.containsKey(EXTRA_SLUG)) {
+                slug = savedInstanceState.getString(EXTRA_SLUG)
+                name = savedInstanceState.getString(EXTRA_NAME)
             }
         }
 
-        view.fragment_articles_recycler_view.addOnScrollListener(scrollListener)
 
-        newsAdapter = NewsAdapter()
-        view.fragment_articles_recycler_view.adapter = newsAdapter
-        newsAdapter.click = this
+        val view = super.onCreateView(inflater, container, savedInstanceState)
 
-        scrollListener.resetState()
+        homeViewModel = ViewModelProviders.of(activity as FragmentActivity, viewModelFactory)[HomeViewModel::class.java]
+        homeViewModel
+            .liveDataArticles()
+            .observe(this, articlesObserver)
 
-        Browser.warm((activity as HomeActivity).baseContext)
 
+        searchRequestForm = SearchRequestForm(
+            apiKey = BuildConfig.API_KEY,
+            sources = slug ?: ""
+        )
+
+        if(savedInstanceState == null) {
+            homeViewModel.loadArticles(searchRequestForm)
+        }
+
+        return view
+    }
+
+    override fun layoutResource(): Int = R.layout.fragment_news
+
+
+    override fun setupView(view: View) {
+        setupToolbar(view)
+        setupRecyclerView(view)
     }
 
 
-    override fun onClick(view: View?) {
+    override fun onClick(
+        view: View?
+    ) {
         when (view?.id) {
             R.id.view_holder_regular_parent, R.id.view_holder_headline_parent -> {
-                val viewHolder = view?.tag as RecyclerView.ViewHolder
+                val viewHolder = view.tag as RecyclerView.ViewHolder
                 val position = viewHolder.adapterPosition
                 val article = newsAdapter.items[position]
                 Browser.openIntern((activity as HomeActivity).baseContext, article.url)
@@ -137,66 +149,18 @@ class NewsFragment : BaseFragment(), View.OnClickListener, ArticlesContract.View
 
     override fun screenName(): String? = ""
 
-
-    override fun onStart() {
-        super.onStart()
-        articlesPresenter.attachView(this)
-        articlesPresenter.start()
-
-        if (newsAdapter.items == null || newsAdapter.items.isEmpty()) {
-            searchRequestForm = SearchRequestForm(
-                apiKey = BuildConfig.API_KEY, sources = slug ?: ""
-            )
-            articlesPresenter.search(searchRequestForm)
-        }
-
+    override fun onResume() {
+        super.onResume()
+        fragment_articles_toolbar.title = name
     }
+
 
     override fun onStop() {
         super.onStop()
+        homeViewModel.liveDataArticles().removeObservers(this)
         fragment_articles_recycler_view.clearOnScrollListeners()
-        articlesPresenter.stop()
     }
 
-    override fun showResults(results: List<Article>) {
-        newsAdapter.items += results
-        fragment_articles_recycler_view.visibility = View.VISIBLE
-
-    }
-
-    override fun setPresenter(presenter: ArticlesContract.ArticlesPresenter) {
-        articlesPresenter = presenter as ArticlesPresenter
-    }
-
-    override fun showProgress() {
-        fragment_articles_custom_view_loading.visibility = View.VISIBLE
-    }
-
-    override fun hideProgress() {
-        fragment_articles_custom_view_loading.visibility = View.GONE
-    }
-
-    override fun hideResults() {
-        fragment_articles_recycler_view.visibility = View.GONE
-    }
-
-    override fun showErrorState() {
-        paintToolbar()
-        fragment_articles_custom_view_error_state.visibility = View.VISIBLE
-    }
-
-    override fun hideErrorState() {
-        fragment_articles_custom_view_error_state.visibility = View.GONE
-    }
-
-    override fun showEmptyState() {
-        paintToolbar()
-        fragment_articles_custom_view_empty_state.visibility = View.VISIBLE
-    }
-
-    override fun hideEmptyState() {
-        fragment_articles_custom_view_empty_state.visibility = View.GONE
-    }
 
     override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
         var opacity = "ff"
@@ -233,9 +197,56 @@ class NewsFragment : BaseFragment(), View.OnClickListener, ArticlesContract.View
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-
+        outState.putString(EXTRA_NAME, name)
+        outState.putString(EXTRA_SLUG, slug)
         super.onSaveInstanceState(outState)
     }
+
+    private fun setupRecyclerView(view: View) {
+        view.fragment_articles_recycler_view.addOnScrollListener(this)
+
+        val linearLayoutManager = LinearLayoutManager(activity)
+        view.fragment_articles_recycler_view.layoutManager = linearLayoutManager
+        view.fragment_articles_recycler_view.addItemDecoration(
+            DividerItemDecoration(
+                view.context,
+                R.drawable.list_divider
+            )
+        )
+
+        scrollListener = object : EndlessRecyclerViewScrollListener(linearLayoutManager) {
+            override fun onLoadMore(page: Int, totalItemsCount: Int, view: RecyclerView) {
+                searchRequestForm?.pageIndex = page
+                homeViewModel.loadArticles(searchRequestForm)
+            }
+        }
+
+        view.fragment_articles_recycler_view.addOnScrollListener(scrollListener)
+
+        newsAdapter = NewsAdapter()
+        view.fragment_articles_recycler_view.adapter = newsAdapter
+        newsAdapter.click = this
+
+        scrollListener.resetState()
+    }
+
+    private fun setupToolbar(view: View) {
+        (activity as HomeActivity).setSupportActionBar(view.fragment_articles_toolbar)
+        paintToolbar()
+        view.fragment_articles_toolbar.setNavigationOnClickListener(this)
+
+        (activity as HomeActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+
+        ViewCompat.setOnApplyWindowInsetsListener(view.fragment_articles_parent) { v, insets ->
+            (view.fragment_articles_toolbar.layoutParams as ViewGroup.MarginLayoutParams).topMargin =
+                insets.systemWindowInsetTop
+            insets.consumeSystemWindowInsets()
+        }
+
+        view.fragment_articles_toolbar.title = name
+    }
+
 
     private fun paintToolbar() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -244,5 +255,53 @@ class NewsFragment : BaseFragment(), View.OnClickListener, ArticlesContract.View
                 ColorDrawable(ContextCompat.getColor(appContext, R.color.colorPrimary))
 
         }
+    }
+
+
+    private fun handleError(it: ViewData<List<Article>>, error: Throwable?) {
+        if (it.error is IOException) {
+
+        }
+
+        if (it.error is HttpException) {
+            when (it.error.code()) {
+                426 -> {
+                    Log.d("ENDLESS END X)", it.error.message())
+                }
+                else -> {
+                    goneViews(
+                        fragment_articles_custom_view_loading,
+                        fragment_articles_recycler_view
+                    )
+
+                    fragment_articles_custom_view_error_state.visible()
+                }
+            }
+        }
+    }
+
+    private fun handleSuccess(it: ViewData<List<Article>>) {
+        goneViews(
+            fragment_articles_custom_view_loading
+        )
+
+        it.data?.run {
+            newsAdapter.items += this
+            newsAdapter.notifyDataSetChanged()
+        }
+
+        if (newsAdapter.items.isNotEmpty()) {
+            fragment_articles_recycler_view.visible()
+            return
+        }
+
+        fragment_articles_custom_view_empty_state.visible()
+    }
+
+    private fun handleLoading() {
+        goneViews(
+            fragment_articles_recycler_view
+        )
+        fragment_articles_custom_view_loading.visible()
     }
 }

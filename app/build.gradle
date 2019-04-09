@@ -17,7 +17,7 @@ android {
         vectorDrawables.useSupportLibrary = true
 
         buildConfigField 'String', 'REST_SERVER', '"https://newsapi.org/"'
-        buildConfigField 'String', 'API_KEY', '"a0db95067dcf4e58bb57743280be666b"'
+        buildConfigField 'String', 'API_KEY', '"44d8783fa3794e54b35739ca8de4ee8f"'
 
         resConfigs("en")
 
