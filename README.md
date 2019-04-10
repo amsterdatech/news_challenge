@@ -9,6 +9,8 @@
 The sample app when run will show you a simple list of all the Bufferoos (Buffer team members!).
 <p align="center">
 <img src="https://github.com/amsterdatech/news_challenge/blob/master/art/splash.png" alt="splash" style="width: 10px;"/>
+<img src="https://github.com/amsterdatech/news_challenge/blob/master/art/list_sources.png" alt="splash" style="width: 10px;"/>
+<img src="https://github.com/amsterdatech/news_challenge/blob/master/art/list_articles.png" alt="splash" style="width: 10px;"/>
 </p>
 
 
