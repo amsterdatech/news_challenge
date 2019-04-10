@@ -25,7 +25,6 @@ import com.dutchtechnologies.news_challenge.extensions.Browser
 import com.dutchtechnologies.news_challenge.model.Article
 import com.dutchtechnologies.news_challenge.model.SearchRequestForm
 import com.dutchtechnologies.news_challenge.popBackStack
-import com.dutchtechnologies.news_challenge.presentation.ArticlesPresenter
 import extra
 import goneViews
 import kotlinx.android.synthetic.main.fragment_news.*
@@ -113,7 +112,7 @@ class NewsFragment : BaseFragment(), View.OnClickListener, NewsAdapter.ScrollLis
             sources = slug ?: ""
         )
 
-        if(savedInstanceState == null) {
+        if (savedInstanceState == null) {
             homeViewModel.loadArticles(searchRequestForm)
         }
 
@@ -190,9 +189,10 @@ class NewsFragment : BaseFragment(), View.OnClickListener, NewsAdapter.ScrollLis
         }
 
         val toolbarColor = "#${opacity}6200EE"
+        var statusbarColor = "#${opacity}3700B3"
         fragment_articles_toolbar?.setBackgroundColor(Color.parseColor(toolbarColor))
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            activity?.window?.statusBarColor = Color.parseColor(toolbarColor)
+            activity?.window?.statusBarColor = Color.parseColor(statusbarColor)
         }
     }
 
@@ -250,7 +250,7 @@ class NewsFragment : BaseFragment(), View.OnClickListener, NewsAdapter.ScrollLis
 
     private fun paintToolbar() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            activity?.window?.statusBarColor = Color.parseColor("#FF6200EE")
+            activity?.window?.statusBarColor = Color.parseColor("#3700B3")
             view?.fragment_articles_toolbar?.background =
                 ColorDrawable(ContextCompat.getColor(appContext, R.color.colorPrimary))
 

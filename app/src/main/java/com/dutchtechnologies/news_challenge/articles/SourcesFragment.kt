@@ -154,8 +154,8 @@ class SourcesFragment : BaseFragment(), View.OnClickListener {
         (activity as HomeActivity).supportActionBar?.setDisplayShowTitleEnabled(false)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            activity?.window?.statusBarColor = context?.resources?.getColor(R.color.colorPrimary, null)
-                ?: Color.parseColor("#006200EE")
+            activity?.window?.statusBarColor = context?.resources?.getColor(R.color.colorPrimaryDark, null)
+                ?: Color.parseColor("#3700B3")
         }
 
         view.fragment_sources_toolbar.title = context?.resources?.getString(R.string.app_name)
