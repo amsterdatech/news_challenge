@@ -259,6 +259,8 @@ class NewsFragment : BaseFragment(), View.OnClickListener, NewsAdapter.ScrollLis
 
 
     private fun handleError(it: ViewData<List<Article>>, error: Throwable?) {
+        paintToolbar()
+
         if (it.error is IOException) {
 
         }
@@ -281,6 +283,8 @@ class NewsFragment : BaseFragment(), View.OnClickListener, NewsAdapter.ScrollLis
     }
 
     private fun handleSuccess(it: ViewData<List<Article>>) {
+        paintToolbar()
+
         goneViews(
             fragment_articles_custom_view_loading
         )
@@ -299,6 +303,8 @@ class NewsFragment : BaseFragment(), View.OnClickListener, NewsAdapter.ScrollLis
     }
 
     private fun handleLoading() {
+        paintToolbar()
+
         goneViews(
             fragment_articles_recycler_view
         )
