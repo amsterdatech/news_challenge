@@ -1,4 +1,31 @@
-##Requirements of the task
+# Android CMIND News App Clean Architecture
+
+
+
+
+## Requirements of the task
+
+
+
+
+
+
+In order to evaluate your skills and coding style we would like you to develop a small application that uses https://newsapi.org API RESTful services.
+
+1. The main screen will load news sources and will then need to present with the following information. You may use any layout.
+   * Source title. 
+   * Description. 
+   * URL.
+2. When a user taps on any source within the previous screen the app goes step 3:
+3. The user should see list of articles with info. You may use any layout.
+    * Article title.
+    * Article description.
+    * Article thumbnail.
+    * Article author.
+    * Article published day.
+
+## Procedure
+
 1. Get your API Key as explained within the documentation https://newsapi.org.
 2. Use Android Studio or XCode and share the project via email of via Github.
 3. Write a few sentences (max. 10) about your approach and send it with your solution.
@@ -6,13 +33,36 @@
 5. Take the opportunity to showcase your coding style and use whatever design pattern
 (MVC, MVVM, etc) you would normally have used for this kind of task.
 
-The sample app when run will show you a simple list of all the Bufferoos (Buffer team members!).
-<p align="center">
-<img src="https://github.com/amsterdatech/news_challenge/blob/master/art/splash.png" alt="splash" style="width: 10px;"/>
-<img src="https://github.com/amsterdatech/news_challenge/blob/master/art/list_sources.png" alt="splash" style="width: 10px;"/>
-<img src="https://github.com/amsterdatech/news_challenge/blob/master/art/list_articles.png" alt="splash" style="width: 10px;"/>
-</p>
 
+## Criteria
+
+1. Interface style, how you implemented the solution visually
+2. Code structure, is the solution scalable
+3. Code style, is everything well documented
+4. Are all the stated requirements implemented
+
+##Plus
+
+1. Adapt UI to device orientation changes
+2. Pagination or load more for the article list
+3. Functional programming
+4. Unit Testing
+
+
+
+
+When start app you gonna see:
+
+1. Simple branded splash
+2. Simple list of all sources.
+3. Simple list of articles filtered by source with pagination
+
+<br/>
+<br/>
+<img src="https://github.com/amsterdatech/news_challenge/blob/master/art/splash.png" alt="Splash"  style="float: left; width: 33%; margin-right: 1%; margin-bottom: 0.5em; "/>
+<img src="https://github.com/amsterdatech/news_challenge/blob/master/art/list_sources.png" alt="Sources"  style="float: left; width: 33%; margin-right: 1%; margin-bottom: 0.5em;" />
+<img src="https://github.com/amsterdatech/news_challenge/blob/master/art/list_articles.png" alt="Articles"  style="float: left; width: 32%; margin-right: 1%; margin-bottom: 0.5em;" />
+<p style="clear: both;">
 
 ## Languages, libraries and tools used
 
@@ -35,8 +85,3 @@ The sample app when run will show you a simple list of all the Bufferoos (Buffer
 
 ## Why clean architecture and why MVVM with LiveData and ViewModels
 
-
-1. Interface style, how you implemented the solution visually
-2. Code structure, is the solution scalable
-3. Code style, is everything well documented
-4. Are all the stated requirements implemented
