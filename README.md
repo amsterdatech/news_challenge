@@ -1,13 +1,6 @@
 # Android CMIND News App Clean Architecture
 
-
-
-
 ## Requirements of the task
-
-
-
-
 
 
 In order to evaluate your skills and coding style we would like you to develop a small application that uses https://newsapi.org API RESTful services.
@@ -41,7 +34,7 @@ In order to evaluate your skills and coding style we would like you to develop a
 3. Code style, is everything well documented
 4. Are all the stated requirements implemented
 
-##Plus
+## Plus
 
 1. Adapt UI to device orientation changes
 2. Pagination or load more for the article list
@@ -50,6 +43,7 @@ In order to evaluate your skills and coding style we would like you to develop a
 
 
 
+## Screenshots
 
 When start app you gonna see:
 
